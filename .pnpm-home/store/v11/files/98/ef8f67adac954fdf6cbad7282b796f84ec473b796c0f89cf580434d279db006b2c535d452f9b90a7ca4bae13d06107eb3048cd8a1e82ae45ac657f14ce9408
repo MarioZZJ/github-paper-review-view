@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const EyeIcon: Icon
+
+export {EyeIcon}
+export default EyeIcon

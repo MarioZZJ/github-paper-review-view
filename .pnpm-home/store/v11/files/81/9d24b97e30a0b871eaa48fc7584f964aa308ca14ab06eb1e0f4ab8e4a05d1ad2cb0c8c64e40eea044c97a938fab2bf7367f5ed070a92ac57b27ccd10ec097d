@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0Zm-1.5 0a4.5 4.5 0 1 0-9 0 4.5 4.5 0 0 0 9 0Z" }), /*#__PURE__*/ React.createElement("path", { d: "M5 7.25a.75.75 0 0 1 0 1.5H1a.75.75 0 0 1 0-1.5Zm3-7a.75.75 0 0 1 .75.75v4a.75.75 0 0 1-1.5 0V1A.75.75 0 0 1 8 .25Zm7 7a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1 0-1.5Zm-7 3a.75.75 0 0 1 .75.75v4a.75.75 0 0 1-1.5 0v-4a.75.75 0 0 1 .75-.75Z" }))
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M21 12a9 9 0 0 1-9 9 9 9 0 0 1-9-9 9 9 0 0 1 9-9 9 9 0 0 1 9 9Zm-1.5 0a7.5 7.5 0 1 0-15 0 7.5 7.5 0 0 0 15 0Z" }), /*#__PURE__*/ React.createElement("path", { d: "M12 .25a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0V1A.75.75 0 0 1 12 .25Zm-6 11a.75.75 0 0 1 0 1.5H1a.75.75 0 0 1 0-1.5Zm17 0a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1 0-1.5Zm-11 6a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0v-5a.75.75 0 0 1 .75-.75Z" }))
+	}
+};
+var CrosshairsIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-crosshairs", svgDataByHeight, heights);
+});
+CrosshairsIcon.displayName = "CrosshairsIcon";
+export { CrosshairsIcon, CrosshairsIcon as default };

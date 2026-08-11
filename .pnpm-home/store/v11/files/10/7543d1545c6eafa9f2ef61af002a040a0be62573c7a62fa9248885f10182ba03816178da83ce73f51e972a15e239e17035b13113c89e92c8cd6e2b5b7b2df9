@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M2.75 1h10.5c.967 0 1.75.783 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 15H2.75A1.75 1.75 0 0 1 1 13.25V2.75C1 1.783 1.783 1 2.75 1Zm9.03 5.28a.749.749 0 1 0-1.06-1.06L6.75 9.189 5.28 7.72a.749.749 0 1 0-1.06 1.06l2 2a.749.749 0 0 0 1.06 0Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M20.25 2c.966 0 1.75.783 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25V3.75C2 2.783 2.783 2 3.75 2Zm-2.97 6.22a.749.749 0 0 0-1.06 0l-5.97 5.969-2.47-2.469a.749.749 0 1 0-1.06 1.06l3 3a.749.749 0 0 0 1.06 0l6.5-6.5a.749.749 0 0 0 0-1.06Z" })
+	}
+};
+var CheckboxFillIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-checkbox-fill", svgDataByHeight, heights);
+});
+CheckboxFillIcon.displayName = "CheckboxFillIcon";
+export { CheckboxFillIcon, CheckboxFillIcon as default };

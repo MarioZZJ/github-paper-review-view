@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M5.75 7.5h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5Zm0 5h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1 0-1.5Zm-4-10h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5ZM2 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm1-6a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10.314-3.082L11.07 2.417A.25.25 0 0 1 11.256 2h4.488a.25.25 0 0 1 .186.417l-2.244 2.5a.25.25 0 0 1-.372 0Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M8.75 11.5h11.5a.75.75 0 0 1 0 1.5H8.75a.75.75 0 0 1 0-1.5Zm0 6h11.5a.75.75 0 0 1 0 1.5H8.75a.75.75 0 0 1 0-1.5Zm-5-12h10a.75.75 0 0 1 0 1.5h-10a.75.75 0 0 1 0-1.5ZM5 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-1 7a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM19.309 7.918l-2.245-2.501A.25.25 0 0 1 17.25 5h4.49a.25.25 0 0 1 .185.417l-2.244 2.5a.25.25 0 0 1-.372 0Z" })
+	}
+};
+var MultiSelectIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-multi-select", svgDataByHeight, heights);
+});
+MultiSelectIcon.displayName = "MultiSelectIcon";
+export { MultiSelectIcon, MultiSelectIcon as default };

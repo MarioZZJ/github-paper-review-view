@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M2.75 1h10.5c.966 0 1.75.784 1.75 1.75v10.5A1.75 1.75 0 0 1 13.25 15H2.75A1.75 1.75 0 0 1 1 13.25V2.75C1 1.784 1.784 1 2.75 1ZM2.5 2.75v10.5c0 .138.112.25.25.25h10.5a.25.25 0 0 0 .25-.25V2.75a.25.25 0 0 0-.25-.25H2.75a.25.25 0 0 0-.25.25Zm9.28 3.53-4.5 4.5a.75.75 0 0 1-1.06 0l-2-2a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018l1.47 1.47 3.97-3.97a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M17.28 9.28a.75.75 0 0 0-1.06-1.06l-5.97 5.97-2.47-2.47a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l6.5-6.5Z" }), /*#__PURE__*/ React.createElement("path", { d: "M3.75 2h16.5c.966 0 1.75.784 1.75 1.75v16.5A1.75 1.75 0 0 1 20.25 22H3.75A1.75 1.75 0 0 1 2 20.25V3.75C2 2.784 2.784 2 3.75 2ZM3.5 3.75v16.5c0 .138.112.25.25.25h16.5a.25.25 0 0 0 .25-.25V3.75a.25.25 0 0 0-.25-.25H3.75a.25.25 0 0 0-.25.25Z" }))
+	}
+};
+var CheckboxIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-checkbox", svgDataByHeight, heights);
+});
+CheckboxIcon.displayName = "CheckboxIcon";
+export { CheckboxIcon, CheckboxIcon as default };

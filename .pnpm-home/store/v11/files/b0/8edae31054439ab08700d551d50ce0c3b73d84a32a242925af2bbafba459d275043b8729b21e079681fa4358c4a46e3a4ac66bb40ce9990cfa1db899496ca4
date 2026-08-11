@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L10 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M2.5 2.75a.75.75 0 0 0-1.5 0v18.5c0 .414.336.75.75.75H20a.75.75 0 0 0 0-1.5H2.5V2.75Z" }), /*#__PURE__*/ React.createElement("path", { d: "M22.28 7.78a.75.75 0 0 0-1.06-1.06l-5.72 5.72-3.72-3.72a.75.75 0 0 0-1.06 0l-6 6a.75.75 0 1 0 1.06 1.06l5.47-5.47 3.72 3.72a.75.75 0 0 0 1.06 0l6.25-6.25Z" }))
+	}
+};
+var GraphIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-graph", svgDataByHeight, heights);
+});
+GraphIcon.displayName = "GraphIcon";
+export { GraphIcon, GraphIcon as default };

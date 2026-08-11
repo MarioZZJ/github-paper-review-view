@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M15.25 15H.75q-.311 0-.53-.22-.22-.219-.22-.53 0-.311.22-.53.219-.22.53-.22h14.5q.311 0 .53.22.22.219.22.53 0 .311-.22.53-.219.22-.53.22Z" }), /*#__PURE__*/ React.createElement("path", { d: "M2.25 7h2.5a.25.25 0 0 1 .25.25v6.5a.25.25 0 0 1-.25.25h-2.5a.25.25 0 0 1-.25-.25v-6.5A.25.25 0 0 1 2.25 7Zm4-4h2.5a.25.25 0 0 1 .25.25v10.5a.25.25 0 0 1-.25.25h-2.5a.25.25 0 0 1-.25-.25V3.25A.25.25 0 0 1 6.25 3Zm4 6h2.5a.25.25 0 0 1 .25.25v4.5a.25.25 0 0 1-.25.25h-2.5a.25.25 0 0 1-.25-.25v-4.5a.25.25 0 0 1 .25-.25Z" }))
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M22.875 22.125H1.125q-.311 0-.53-.22-.22-.219-.22-.53 0-.311.22-.53.219-.22.53-.22h21.75q.311 0 .53.22.22.219.22.53 0 .311-.22.53-.219.22-.53.22Z" }), /*#__PURE__*/ React.createElement("path", { d: "M3.25 10.5h4a.25.25 0 0 1 .25.25v10a.25.25 0 0 1-.25.25h-4a.25.25 0 0 1-.25-.25v-10a.25.25 0 0 1 .25-.25Zm6-6h4a.25.25 0 0 1 .25.25v16a.25.25 0 0 1-.25.25h-4a.25.25 0 0 1-.25-.25v-16a.25.25 0 0 1 .25-.25Zm6 9h4a.25.25 0 0 1 .25.25v7a.25.25 0 0 1-.25.25h-4a.25.25 0 0 1-.25-.25v-7a.25.25 0 0 1 .25-.25Z" }))
+	}
+};
+var GraphBarHorizontalIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-graph-bar-horizontal", svgDataByHeight, heights);
+});
+GraphBarHorizontalIcon.displayName = "GraphBarHorizontalIcon";
+export { GraphBarHorizontalIcon, GraphBarHorizontalIcon as default };

@@ -1,0 +1,12 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16"];
+var svgDataByHeight = { "16": {
+	"width": 16,
+	"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M3.75 8a4.25 4.25 0 1 1 8.5 0 4.25 4.25 0 0 1-8.5 0ZM9.5 8a1.5 1.5 0 1 0-3.001.001A1.5 1.5 0 0 0 9.5 8Z" }), /*#__PURE__*/ React.createElement("path", { d: "M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-5.75a5.75 5.75 0 1 0 0 11.5 5.75 5.75 0 1 0 0-11.5Z" }))
+} };
+var FeedIssueOpenIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-feed-issue-open", svgDataByHeight, heights);
+});
+FeedIssueOpenIcon.displayName = "FeedIssueOpenIcon";
+export { FeedIssueOpenIcon, FeedIssueOpenIcon as default };

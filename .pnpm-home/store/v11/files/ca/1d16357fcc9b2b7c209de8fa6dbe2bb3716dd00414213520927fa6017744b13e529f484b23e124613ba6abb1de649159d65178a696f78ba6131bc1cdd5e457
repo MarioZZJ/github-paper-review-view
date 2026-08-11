@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const ReportIcon: Icon
+
+export {ReportIcon}
+export default ReportIcon

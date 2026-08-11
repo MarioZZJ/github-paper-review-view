@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement(React.Fragment, null, /*#__PURE__*/ React.createElement("path", { d: "M2.75 2.5a.25.25 0 0 0-.25.25v2.5a.75.75 0 0 1-1.5 0v-2.5C1 1.784 1.784 1 2.75 1h2.5a.75.75 0 0 1 0 1.5h-2.5ZM10 1.75a.75.75 0 0 1 .75-.75h2.5c.966 0 1.75.784 1.75 1.75v2.5a.75.75 0 0 1-1.5 0v-2.5a.25.25 0 0 0-.25-.25h-2.5a.75.75 0 0 1-.75-.75ZM1.75 10a.75.75 0 0 1 .75.75v2.5c0 .138.112.25.25.25h2.5a.75.75 0 0 1 0 1.5h-2.5A1.75 1.75 0 0 1 1 13.25v-2.5a.75.75 0 0 1 .75-.75Zm12.5 0a.75.75 0 0 1 .75.75v2.5A1.75 1.75 0 0 1 13.25 15h-2.5a.75.75 0 0 1 0-1.5h2.5a.25.25 0 0 0 .25-.25v-2.5a.75.75 0 0 1 .75-.75ZM8 10a2 2 0 1 0 .001-3.999A2 2 0 0 0 8 10Z" }), /*#__PURE__*/ React.createElement("path", { d: "M8 10a2 2 0 1 0 .001-3.999A2 2 0 0 0 8 10Z" }))
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M2.75 15.25a.75.75 0 0 1 .75.75v4.25c0 .138.112.25.25.25H8A.75.75 0 0 1 8 22H3.75A1.75 1.75 0 0 1 2 20.25V16a.75.75 0 0 1 .75-.75Zm18.5 0A.75.75 0 0 1 22 16v4.25A1.75 1.75 0 0 1 20.25 22H16a.75.75 0 0 1 0-1.5h4.25a.25.25 0 0 0 .25-.25V16a.75.75 0 0 1 .75-.75ZM8 2a.75.75 0 0 1 0 1.5H3.75a.25.25 0 0 0-.25.25V8A.75.75 0 0 1 2 8V3.75C2 2.784 2.784 2 3.75 2H8Zm12.25 0c.966 0 1.75.784 1.75 1.75V8a.75.75 0 0 1-1.5 0V3.75a.25.25 0 0 0-.25-.25H16A.75.75 0 0 1 16 2h4.25ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" })
+	}
+};
+var FocusCenterIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-focus-center", svgDataByHeight, heights);
+});
+FocusCenterIcon.displayName = "FocusCenterIcon";
+export { FocusCenterIcon, FocusCenterIcon as default };

@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M13.25 2H2.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5Zm-3 5h-4.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5Zm3 5H2.75a.75.75 0 0 0 0 1.5h10.5a.75.75 0 0 0 0-1.5Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M20.25 3H3.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5Zm-4 8h-8.5a.75.75 0 0 0 0 1.5h8.5a.75.75 0 0 0 0-1.5Zm4 8H3.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5Z" })
+	}
+};
+var SpacingLargeIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-spacing-large", svgDataByHeight, heights);
+});
+SpacingLargeIcon.displayName = "SpacingLargeIcon";
+export { SpacingLargeIcon, SpacingLargeIcon as default };

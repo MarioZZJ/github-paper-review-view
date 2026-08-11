@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const AlertIcon: Icon
+
+export {AlertIcon}
+export default AlertIcon

@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Papers Review — TeX PR 审阅界面参考</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-subtle: #f6f8fa;
+      --surface-raised: #ffffff;
+      --border: #d0d7de;
+      --border-muted: #d8dee4;
+      --text: #1f2328;
+      --muted: #656d76;
+      --subtle: #8c959f;
+      --accent: #6f42c1;
+      --accent-strong: #6639ba;
+      --accent-soft: #f1eafe;
+      --blue: #0969da;
+      --green: #1a7f37;
+      --green-bg: #dafbe1;
+      --green-border: #82e596;
+      --red: #cf222e;
+      --red-bg: #ffebe9;
+      --red-border: #ff8182;
+      --amber: #9a6700;
+      --amber-bg: #fff8c5;
+      --amber-border: #d4a72c;
+      --selection: #f1eafe;
+      --selection-border: #8250df;
+      --shadow: 0 8px 24px rgba(140, 149, 159, .18);
+      --body-font: Georgia, "Noto Serif", "Source Serif 4", "Times New Roman", serif;
+      --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --mono-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --paper-size: 17px;
+      --paper-leading: 1.72;
+      --paper-width: 940px;
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface-subtle: #0d1117;
+      --surface-raised: #1c2128;
+      --border: #30363d;
+      --border-muted: #30363d;
+      --text: #e6edf3;
+      --muted: #9da7b3;
+      --subtle: #7d8590;
+      --accent: #a371f7;
+      --accent-strong: #b083f0;
+      --accent-soft: #2f2146;
+      --blue: #58a6ff;
+      --green: #56d364;
+      --green-bg: #17351f;
+      --green-border: #2ea043;
+      --red: #ff7b72;
+      --red-bg: #3b1f24;
+      --red-border: #f85149;
+      --amber: #e3b341;
+      --amber-bg: #3b2e10;
+      --amber-border: #9e6a03;
+      --selection: #2f2146;
+      --selection-border: #a371f7;
+      --shadow: 0 8px 28px rgba(0,0,0,.36);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ui-font);
+      overflow: hidden;
+    }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: var(--blue); text-decoration: none; }
+    svg { display: block; }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 64px 103px 58px minmax(0, 1fr) 44px;
+      background: var(--bg);
+    }
+
+    .global-header {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 26px;
+      padding: 0 34px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 600; }
+    .brand .slash { color: var(--muted); font-weight: 400; }
+    .repo-nav { align-self: end; display: flex; height: 40px; gap: 26px; align-items: center; font-size: 13px; }
+    .repo-nav a { color: var(--text); height: 40px; display: flex; align-items: center; gap: 7px; border-bottom: 2px solid transparent; }
+    .repo-nav a.active { border-color: var(--accent); font-weight: 600; }
+    .counter { min-width: 20px; padding: 1px 6px; border-radius: 20px; background: var(--surface-subtle); color: var(--muted); font-size: 12px; text-align: center; }
+    .global-actions { display: flex; align-items: center; gap: 8px; }
+    .search { width: 250px; height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 11px; border: 1px solid var(--border); border-radius: 7px; color: var(--muted); font-size: 12px; background: var(--surface); }
+    .icon-button { width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); display: grid; place-items: center; }
+    .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(145deg,#d29922,#8250df); color:#fff; display:grid; place-items:center; font-weight:700; font-size:12px; }
+
+    .pr-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 36px 0; display: grid; grid-template-rows: auto 41px; }
+    .pr-title-row { display: grid; grid-template-columns: 1fr auto; align-items: start; }
+    .pr-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .state { background: #1f883d; color: white; font-weight: 600; border-radius: 20px; padding: 5px 10px; font-size: 12px; display:flex; align-items:center; gap:5px; }
+    .pr-title h1 { margin: 0; font-size: 20px; line-height: 1.3; font-weight: 650; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pr-number { color: var(--muted); font-weight: 400; }
+    .review-summary { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 12px; }
+    .review-summary button { height: 32px; padding: 0 12px; border: 1px solid var(--border); background: var(--surface); border-radius: 7px; }
+    .progress { width: 160px; height: 4px; background: var(--border-muted); border-radius: 4px; overflow:hidden; }
+    .progress > span { display:block; width: 22%; height:100%; background:var(--accent); }
+    .pr-tabs { display: flex; align-items: end; gap: 28px; font-size: 13px; }
+    .pr-tabs a { height: 41px; color: var(--text); display:flex; align-items:center; gap:7px; border-bottom: 2px solid transparent; }
+    .pr-tabs a.active { border-color: var(--accent); font-weight: 650; }
+    .beta { color: var(--green); border:1px solid var(--green-border); background:var(--green-bg); padding:2px 6px; border-radius:6px; font-size:11px; }
+
+    .toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 36px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; }
+    .segmented { display:flex; align-items:center; }
+    .segmented button { height:34px; padding:0 13px; border:1px solid var(--border); border-right:0; background:var(--surface); font-size:12px; display:flex; align-items:center; gap:6px; }
+    .segmented button:first-child { border-radius:7px 0 0 7px; }
+    .segmented button:last-child { border-right:1px solid var(--border); border-radius:0 7px 7px 0; }
+    .segmented button.active { background:var(--accent-soft); color:var(--accent); border-color:var(--selection-border); box-shadow: inset 0 0 0 1px var(--selection-border); }
+    .reading-controls { display:flex; align-items:center; gap:8px; justify-content:center; }
+    .control { height:34px; min-width:62px; border:1px solid var(--border); border-radius:7px; background:var(--surface); padding:0 10px; font-size:12px; display:flex; align-items:center; justify-content:center; gap:8px; }
+    .control.small { min-width:34px; width:34px; padding:0; }
+    .toolbar-right { display:flex; justify-content:flex-end; align-items:center; gap:8px; }
+    .pill { height:34px; border:1px solid var(--border); border-radius:7px; background:var(--surface); padding:0 11px; font-size:12px; display:flex; align-items:center; gap:7px; }
+    .pill .badge { background:var(--accent-soft); color:var(--accent); padding:1px 6px; border-radius:20px; }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 276px minmax(540px, 1fr) 360px;
+      gap: 14px;
+      padding: 14px 36px;
+    }
+    .panel { min-height:0; background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+
+    .file-panel { display:grid; grid-template-rows:auto 1fr auto; }
+    .panel-title { height:47px; display:flex; align-items:center; justify-content:space-between; padding:0 14px; border-bottom:1px solid var(--border); font-weight:650; font-size:14px; }
+    .file-content { min-height:0; overflow:auto; padding:12px 9px 12px 10px; }
+    .file-search { height:32px; border:1px solid var(--border); border-radius:6px; display:flex; align-items:center; gap:7px; padding:0 9px; color:var(--muted); font-size:12px; margin:0 2px 11px; }
+    .tree { list-style:none; padding:0; margin:0; font-size:12px; }
+    .tree li { position:relative; }
+    .tree-row { min-height:29px; border-radius:5px; padding:5px 7px; display:flex; align-items:center; gap:7px; color:var(--text); }
+    .tree-row:hover { background:var(--surface-subtle); }
+    .tree-row.active { background:var(--accent-soft); color:var(--accent); font-weight:650; }
+    .tree-row .grow { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tree-row.level-1 { padding-left:22px; }
+    .tree-row.level-2 { padding-left:38px; }
+    .tree-row.level-3 { padding-left:53px; }
+    .tree-row.level-2::before, .tree-row.level-3::before { content:""; position:absolute; left:27px; top:0; bottom:0; border-left:1px solid var(--border-muted); }
+    .tree-row.level-3::before { left:43px; }
+    .file-mark { width:17px; height:17px; border-radius:4px; border:1px solid #a371f7; color:var(--accent); display:grid; place-items:center; font-size:9px; }
+    .change-count { color:var(--accent); background:var(--accent-soft); min-width:18px; padding:1px 5px; border-radius:10px; text-align:center; }
+    .legend { margin:10px 7px 0; border:1px solid var(--border); border-radius:7px; padding:10px; }
+    .legend strong { display:block; margin-bottom:7px; font-size:12px; }
+    .legend-row { display:flex; align-items:center; gap:8px; color:var(--muted); margin:6px 0; }
+    .legend-swatch { width:17px; height:17px; border-radius:4px; display:grid; place-items:center; font-size:11px; font-weight:700; }
+    .legend-swatch.add { background:var(--green-bg); color:var(--green); }
+    .legend-swatch.del { background:var(--red-bg); color:var(--red); }
+    .legend-swatch.mod { background:var(--amber-bg); color:var(--amber); }
+    .file-footer { height:41px; padding:0 14px; border-top:1px solid var(--border); display:flex; align-items:center; color:var(--muted); font-size:11px; }
+
+    .paper-panel { display:grid; grid-template-rows:47px minmax(0,1fr); }
+    .paper-header { height:47px; display:flex; align-items:center; gap:9px; padding:0 14px; border-bottom:1px solid var(--border); }
+    .paper-header strong { font-size:15px; }
+    .paper-header .path { color:var(--muted); font-size:12px; }
+    .paper-header .spacer { flex:1; }
+    .paper-header .anchor { color:var(--muted); }
+    .paper-scroll { min-height:0; overflow:auto; scroll-behavior:smooth; background:linear-gradient(90deg,var(--surface) 0,var(--surface) calc(100% - 52px),var(--surface-subtle) calc(100% - 52px)); }
+    .paper { max-width:var(--paper-width); margin:0 auto; padding:24px 72px 120px 40px; font-family:var(--body-font); font-size:var(--paper-size); line-height:var(--paper-leading); }
+    .paper h2 { font-family:var(--ui-font); font-size:21px; line-height:1.35; margin:18px 0 17px; letter-spacing:-.015em; }
+    .paper h3 { font-family:var(--ui-font); font-size:17px; line-height:1.35; margin:28px 0 13px; }
+    .paper p { margin:0 0 18px; text-align:left; }
+    .paper .sentence { position:relative; border-radius:4px; padding:1px 3px; margin-left:-3px; transition:background .12s,border-color .12s; cursor:text; box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+    .paper .sentence:hover { background:color-mix(in srgb,var(--accent-soft) 45%, transparent); }
+    .paper .sentence::after { content:attr(data-line); position:absolute; left:calc(100% + 19px); top:.28em; color:var(--subtle); font-family:var(--ui-font); font-size:10px; line-height:1; white-space:nowrap; }
+    .paper .sentence.selected { background:var(--selection); outline:1px dashed var(--selection-border); }
+    .paper .sentence.added { background:var(--green-bg); border-left:3px solid var(--green-border); padding-left:9px; }
+    .paper .sentence.deleted { display:block; background:var(--red-bg); border-left:3px solid var(--red-border); padding:8px 11px; margin:8px 0 13px -3px; color:color-mix(in srgb,var(--text) 74%,var(--red)); text-decoration:line-through; }
+    .paper .sentence.modified { background:var(--amber-bg); border-left:3px solid var(--amber-border); padding-left:9px; }
+    .change-label { font-family:var(--ui-font); float:right; margin-left:12px; padding:1px 7px; border-radius:12px; font-size:10px; line-height:1.8; font-weight:650; text-decoration:none; }
+    .change-label.add { background:color-mix(in srgb,var(--green-bg) 70%,var(--surface)); color:var(--green); }
+    .change-label.del { background:color-mix(in srgb,var(--red-bg) 70%,var(--surface)); color:var(--red); }
+    .change-label.mod { background:color-mix(in srgb,var(--amber-bg) 70%,var(--surface)); color:var(--amber); }
+    .inline-del { color:var(--red); text-decoration:line-through; background:var(--red-bg); border-radius:3px; padding:0 2px; }
+    .inline-add { color:var(--green); background:var(--green-bg); border-radius:3px; padding:0 2px; }
+    .citation { font-family:var(--ui-font); font-size:.78em; color:var(--blue); white-space:nowrap; border-bottom:1px dotted currentColor; }
+    .ref { font-family:var(--ui-font); font-size:.78em; color:var(--accent); background:var(--accent-soft); border-radius:4px; padding:1px 4px; white-space:nowrap; }
+    .math-block { margin:16px auto 20px; width:max-content; max-width:100%; min-width:360px; padding:15px 28px; border:1px solid var(--border); background:var(--surface-raised); border-radius:7px; text-align:center; overflow:auto; font-size:1.05em; }
+    .source-fallback { font-family:var(--mono-font); font-size:12px; background:var(--surface-subtle); border:1px solid var(--border); border-radius:6px; padding:10px 12px; margin:12px 0 18px; white-space:pre-wrap; }
+    .selection-box { position:relative; border:1px dashed var(--selection-border); background:color-mix(in srgb,var(--selection) 52%, transparent); border-radius:7px; padding:10px 10px 5px; margin:12px -10px 18px; }
+    .selection-box .range-badge { position:absolute; right:8px; bottom:7px; font-family:var(--ui-font); font-size:10px; color:var(--accent); background:var(--accent-soft); border-radius:12px; padding:2px 7px; }
+    .floating-tools { position:sticky; z-index:6; bottom:14px; margin:-58px auto 0; width:max-content; display:flex; align-items:center; gap:0; border:1px solid var(--border); border-radius:8px; background:var(--surface-raised); box-shadow:var(--shadow); overflow:hidden; font-family:var(--ui-font); }
+    .floating-tools button { height:36px; border:0; border-right:1px solid var(--border); background:var(--surface-raised); padding:0 11px; font-size:12px; }
+    .floating-tools button:last-child { border:0; }
+    .floating-tools .primary { color:#fff; background:#24292f; font-weight:650; }
+    html[data-theme="dark"] .floating-tools .primary { background:#f0f6fc; color:#161b22; }
+
+    .view { display:none; }
+    .view.active { display:block; }
+    .split-view { padding:16px; font-size:14px; }
+    .split-head { display:grid; grid-template-columns:1fr 1fr; gap:12px; position:sticky; top:0; z-index:2; background:var(--surface); padding-bottom:8px; font-family:var(--ui-font); }
+    .split-head div { padding:8px 12px; border:1px solid var(--border); border-radius:6px; font-weight:650; }
+    .split-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:8px 0; align-items:stretch; }
+    .split-cell { position:relative; min-height:64px; border:1px solid var(--border); border-radius:6px; padding:12px 36px 12px 12px; line-height:1.6; font-family:var(--body-font); }
+    .split-cell.old { background:var(--red-bg); }
+    .split-cell.new { background:var(--green-bg); }
+    .split-cell.context { background:var(--surface); }
+    .split-line { position:absolute; right:8px; top:8px; color:var(--subtle); font-family:var(--ui-font); font-size:10px; }
+    .raw-view { padding:0; font-family:var(--mono-font); font-size:12px; line-height:1.65; }
+    .raw-line { display:grid; grid-template-columns:40px 40px 1fr; min-height:24px; }
+    .raw-line .ln { color:var(--subtle); background:var(--surface-subtle); text-align:right; padding:2px 8px; user-select:none; }
+    .raw-line code { white-space:pre-wrap; padding:2px 10px; overflow-wrap:anywhere; }
+    .raw-line.add code { background:var(--green-bg); }
+    .raw-line.del code { background:var(--red-bg); }
+    .tok-command { color:#8250df; }
+    .tok-brace { color:var(--muted); }
+    .tok-comment { color:#6e7781; font-style:italic; }
+
+    .comments-panel { display:grid; grid-template-rows:47px 44px auto minmax(0,1fr); }
+    .comments-tabs { display:flex; border-bottom:1px solid var(--border); padding:0 12px; gap:20px; font-size:12px; }
+    .comments-tabs button { border:0; border-bottom:2px solid transparent; background:transparent; padding:0 2px; color:var(--muted); }
+    .comments-tabs button.active { color:var(--accent); border-color:var(--accent); font-weight:650; }
+    .composer { margin:12px; border:1px solid var(--border); border-radius:7px; overflow:hidden; background:var(--surface); }
+    .composer.hidden { display:none; }
+    .selection-summary { padding:8px 10px; font-size:11px; color:var(--muted); background:var(--accent-soft); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:8px; }
+    .editor-tabs { height:34px; display:flex; align-items:end; gap:17px; padding:0 11px; border-bottom:1px solid var(--border); font-size:11px; }
+    .editor-tabs span { height:34px; display:flex; align-items:center; border-bottom:2px solid var(--accent); color:var(--accent); font-weight:650; }
+    .editor-toolbar { height:34px; display:flex; align-items:center; gap:13px; padding:0 10px; border-bottom:1px solid var(--border); color:var(--muted); font-size:13px; }
+    .composer textarea { width:100%; min-height:92px; border:0; resize:vertical; padding:10px; background:var(--surface); outline:0; font-size:12px; line-height:1.5; }
+    .composer-actions { display:flex; justify-content:flex-end; gap:8px; padding:9px; border-top:1px solid var(--border); }
+    .btn { height:31px; padding:0 11px; border:1px solid var(--border); border-radius:6px; background:var(--surface); font-size:12px; font-weight:600; }
+    .btn.primary { color:#fff; border-color:var(--accent-strong); background:var(--accent-strong); }
+    .btn.danger { color:#fff; border-color:#cf222e; background:#cf222e; }
+    .threads { min-height:0; overflow:auto; padding:0 12px 22px; }
+    .thread-head { height:38px; display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+    .thread-head select { border:1px solid var(--border); border-radius:6px; background:var(--surface); height:29px; padding:0 7px; font-size:11px; }
+    .thread { border:1px solid var(--border); border-radius:7px; margin-bottom:10px; background:var(--surface); overflow:hidden; }
+    .thread.resolved { opacity:.68; }
+    .thread-meta { display:grid; grid-template-columns:28px 1fr auto; gap:7px; align-items:center; padding:10px 10px 5px; }
+    .thread-avatar { width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:#d29922; color:#fff; font-size:10px; font-weight:700; }
+    .thread-author { font-size:12px; font-weight:650; }
+    .thread-time { color:var(--muted); font-weight:400; margin-left:5px; }
+    .thread-status { color:var(--amber); background:var(--amber-bg); border-radius:10px; padding:2px 7px; font-size:10px; }
+    .thread.resolved .thread-status { color:var(--green); background:var(--green-bg); }
+    .thread-anchor { margin:0 10px 6px 45px; color:var(--accent); font-size:10px; }
+    .thread-body { padding:0 10px 8px 45px; font-size:12px; line-height:1.55; white-space:pre-wrap; }
+    .thread-actions { padding:0 10px 8px 45px; display:flex; gap:12px; color:var(--muted); font-size:10px; }
+    .thread-actions button { border:0; padding:0; background:transparent; color:inherit; font-size:10px; }
+    .reply { margin:0 10px 9px 45px; border-left:2px solid var(--border); padding:7px 8px; background:var(--surface-subtle); border-radius:0 5px 5px 0; font-size:11px; line-height:1.5; }
+    .load-more { width:100%; height:31px; border:1px solid var(--border); border-radius:6px; background:var(--surface); color:var(--muted); font-size:11px; }
+
+    .statusbar { margin:0 36px; border:1px solid var(--border); border-bottom:0; border-radius:8px 8px 0 0; background:var(--surface); display:grid; grid-template-columns:210px repeat(4,auto) 1fr auto; align-items:center; font-size:11px; overflow:hidden; }
+    .statusbar > div { height:44px; display:flex; align-items:center; gap:8px; padding:0 16px; border-right:1px solid var(--border); white-space:nowrap; }
+    .statusbar .review-progress { border:0; justify-content:flex-end; color:var(--muted); }
+    .statusbar .review-progress .progress { width:180px; }
+    .stat-add { color:var(--green); }
+    .stat-del { color:var(--red); }
+    .stat-mod { color:var(--amber); }
+
+    .modal-backdrop { position:fixed; inset:0; z-index:50; background:rgba(31,35,40,.42); display:none; align-items:center; justify-content:center; }
+    .modal-backdrop.open { display:flex; }
+    .modal { width:470px; max-width:calc(100vw - 32px); background:var(--surface); border:1px solid var(--border); border-radius:10px; box-shadow:0 24px 80px rgba(0,0,0,.28); overflow:hidden; }
+    .modal-title { height:50px; padding:0 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); font-weight:650; }
+    .modal-body { padding:14px 16px; }
+    .modal textarea { width:100%; min-height:92px; border:1px solid var(--border); border-radius:7px; background:var(--surface); padding:10px; resize:vertical; }
+    .review-option { display:flex; gap:9px; margin:12px 0; align-items:flex-start; font-size:12px; }
+    .review-option strong { display:block; margin-bottom:2px; }
+    .review-option span { color:var(--muted); }
+    .modal-actions { padding:12px 16px; display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border); }
+    .toast { position:fixed; z-index:70; left:50%; bottom:60px; transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:9px 13px; border-radius:7px; color:#fff; background:#24292f; font-size:12px; box-shadow:var(--shadow); transition:.2s; }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+
+    @media (max-width: 1180px) {
+      .workspace { grid-template-columns:230px minmax(480px,1fr) 320px; padding-left:18px; padding-right:18px; }
+      .global-header, .pr-header, .toolbar { padding-left:18px; padding-right:18px; }
+      .statusbar { margin-left:18px; margin-right:18px; }
+      .repo-nav a:nth-last-child(-n+2) { display:none; }
+    }
+    @media (max-width: 940px) {
+      body { overflow:auto; }
+      .app { height:auto; min-height:100vh; grid-template-rows:64px 103px auto auto 44px; }
+      .global-header { grid-template-columns:auto 1fr; }
+      .global-actions { display:none; }
+      .repo-nav { justify-self:end; }
+      .toolbar { grid-template-columns:1fr; padding:10px 14px; gap:8px; }
+      .reading-controls, .toolbar-right { justify-content:flex-start; }
+      .workspace { grid-template-columns:1fr; }
+      .file-panel { display:none; }
+      .comments-panel { min-height:560px; }
+      .paper-panel { min-height:760px; }
+      .statusbar { display:none; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="global-header">
+    <div class="brand">
+      <svg width="27" height="27" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .7a11.3 11.3 0 0 0-3.57 22c.56.1.77-.24.77-.54v-2.1c-3.14.68-3.8-1.33-3.8-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.68.08-.68 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.28-5.14-1.25-5.14-5.58 0-1.23.44-2.24 1.16-3.03-.12-.28-.5-1.43.11-2.99 0 0 .95-.3 3.1 1.16a10.7 10.7 0 0 1 5.64 0c2.15-1.46 3.1-1.16 3.1-1.16.61 1.56.23 2.71.11 2.99.72.79 1.16 1.8 1.16 3.03 0 4.34-2.64 5.29-5.16 5.57.4.35.77 1.04.77 2.1v3.11c0 .3.2.65.78.54A11.3 11.3 0 0 0 12 .7Z"/></svg>
+      <span>YVing3</span><span class="slash">/</span><span>STNC</span>
+    </div>
+    <nav class="repo-nav">
+      <a href="#">Code</a><a href="#">Issues</a><a class="active" href="#">Pull requests <span class="counter">37</span></a><a href="#">Actions</a><a href="#">Projects</a><a href="#">Security</a><a href="#">Insights</a>
+    </nav>
+    <div class="global-actions">
+      <div class="search"><span>⌕</span><span>Type <b>/</b> to search</span></div>
+      <button class="icon-button" aria-label="create">＋</button>
+      <button class="icon-button" aria-label="issues">◉</button>
+      <button class="icon-button" aria-label="pull requests">⑂</button>
+      <button class="icon-button" aria-label="notifications">▣</button>
+      <div class="avatar">M</div>
+    </div>
+  </header>
+
+  <section class="pr-header">
+    <div class="pr-title-row">
+      <div class="pr-title">
+        <span class="state">⑂ Open</span>
+        <h1>Update manuscript and split supplementary material <span class="pr-number">#37</span></h1>
+      </div>
+      <div class="review-summary">
+        <button id="reviewButton">Review changes ▾</button>
+        <span>3 / 6 files reviewed</span><div class="progress"><span></span></div><button>•••</button>
+      </div>
+    </div>
+    <nav class="pr-tabs">
+      <a href="#">▱ Conversation <span class="counter">8</span></a>
+      <a href="#">⌁ Commits <span class="counter">2</span></a>
+      <a href="#">☑ Checks <span class="counter">1</span></a>
+      <a href="#">▧ Files changed <span class="counter">6</span></a>
+      <a class="active" href="#">Papers Review <span class="beta">Beta</span></a>
+    </nav>
+  </section>
+
+  <section class="toolbar">
+    <div class="segmented" id="viewModes">
+      <button class="active" data-mode="final">☷ 修改后阅读</button>
+      <button data-mode="original">☰ 修改前阅读</button>
+      <button data-mode="split">▥ 左右对照</button>
+      <button data-mode="raw">⌘ 原始 TeX</button>
+    </div>
+    <div class="reading-controls">
+      <button class="control small" id="fontDown">A−</button>
+      <span class="control" id="fontValue">17px</span>
+      <button class="control small" id="fontUp">A＋</button>
+      <select class="control" id="fontFamily"><option value="serif">Noto Serif</option><option value="system">System UI</option><option value="mono">Monospace</option></select>
+      <select class="control" id="lineHeight"><option value="1.55">1.55</option><option value="1.72" selected>1.72</option><option value="1.9">1.90</option></select>
+      <select class="control" id="paperWidth"><option value="820">宽度 820px</option><option value="940" selected>宽度 940px</option><option value="1080">宽度 1080px</option></select>
+    </div>
+    <div class="toolbar-right">
+      <button class="pill">⚙ 显示设置 ▾</button>
+      <button class="pill" id="unresolvedToggle">▣ 未解决评论 <span class="badge" id="unresolvedCount">3</span></button>
+      <button class="control small" id="themeToggle" title="切换主题">◐</button>
+    </div>
+  </section>
+
+  <main class="workspace">
+    <aside class="panel file-panel">
+      <div class="panel-title"><span>文件与章节</span><span style="color:var(--muted)">‹</span></div>
+      <div class="file-content">
+        <div class="file-search">⌕ 搜索文件或章节（⌘P）</div>
+        <ul class="tree">
+          <li><div class="tree-row"><span>⌄</span><span class="file-mark">M</span><span class="grow">manuscript.tex</span><span class="change-count">23</span></div></li>
+          <li><a class="tree-row level-1" href="#abstract"><span>─</span><span class="grow">摘要</span></a></li>
+          <li><a class="tree-row level-1" href="#intro"><span>─</span><span class="grow">1 Introduction</span></a></li>
+          <li><a class="tree-row level-1" href="#related"><span>─</span><span class="grow">2 Related work</span><span class="change-count">3</span></a></li>
+          <li><div class="tree-row level-1"><span>⌄</span><span class="grow">3 Methods</span><span class="change-count">8</span></div></li>
+          <li><a class="tree-row level-2" href="#schema"><span>─</span><span class="grow">3.1 Semantic schema</span><span class="change-count">2</span></a></li>
+          <li><a class="tree-row level-2 active" href="#data"><span>─</span><span class="grow">3.2 Data and extraction</span><span class="change-count">4</span></a></li>
+          <li><a class="tree-row level-2" href="#coupling"><span>─</span><span class="grow">3.3 Network comparison</span><span class="change-count">2</span></a></li>
+          <li><div class="tree-row level-1"><span>⌄</span><span class="grow">4 Results</span><span class="change-count">7</span></div></li>
+          <li><a class="tree-row level-2" href="#entity"><span>─</span><span class="grow">4.1 Entity distribution</span><span class="change-count">3</span></a></li>
+          <li><a class="tree-row level-2" href="#relation"><span>─</span><span class="grow">4.2 Relation distribution</span><span class="change-count">2</span></a></li>
+          <li><a class="tree-row level-2" href="#validation"><span>─</span><span class="grow">4.3 Coupling validation</span><span class="change-count">3</span></a></li>
+          <li><a class="tree-row level-1" href="#discussion"><span>─</span><span class="grow">5 Discussion</span><span class="change-count">4</span></a></li>
+          <li><a class="tree-row level-1" href="#conclusion"><span>─</span><span class="grow">6 Conclusion</span><span class="change-count">1</span></a></li>
+          <li style="margin-top:8px"><div class="tree-row"><span>›</span><span class="file-mark">M</span><span class="grow">supplementary_material.tex</span><span class="change-count">6</span></div></li>
+        </ul>
+        <div class="legend">
+          <strong>修订标记</strong>
+          <div class="legend-row"><span class="legend-swatch add">＋</span><span>新增内容</span></div>
+          <div class="legend-row"><span class="legend-swatch del">−</span><span>删除内容</span></div>
+          <div class="legend-row"><span class="legend-swatch mod">∼</span><span>修改内容</span></div>
+          <div class="legend-row"><span class="legend-swatch">=</span><span>上下文</span></div>
+        </div>
+      </div>
+      <div class="file-footer">Papers Review visual reference · v1.0</div>
+    </aside>
+
+    <section class="panel paper-panel">
+      <div class="paper-header"><strong>3.2 Data and knowledge extraction</strong><span class="path">(manuscript.tex)</span><span class="spacer"></span><span class="anchor">⌁</span></div>
+      <div class="paper-scroll" id="paperScroll">
+        <div class="view active" data-view="final">
+          <article class="paper">
+            <h2 id="data">3.2 Data and knowledge extraction</h2>
+            <p>
+              <span class="sentence" data-line="R535" data-index="0">The empirical analysis compares publications in artificial intelligence (AI) and neurosciences (NS) over the period 2000–2023.</span>
+              <span class="sentence" data-line="R536" data-index="1">The data-construction procedure combines journal classification, bibliographic retrieval, and document-level filtering.</span>
+            </p>
+            <p>
+              <span class="sentence deleted" data-line="L537" data-index="2"><span class="change-label del">− 删除</span>We first identified first-quartile (Q1) journals in the “Computer Science, Artificial Intelligence” and “Neurosciences” categories from the 2024 Journal Citation Reports (JCR) in the Web of Science database.</span>
+              <span class="sentence added" data-line="R538" data-index="3"><span class="change-label add">＋ 新增</span>We identified first-quartile (Q1) journals in the “Computer Science, Artificial Intelligence” and “Neurosciences” categories of the 2024 Journal Citation Reports.</span>
+              <span class="sentence modified" data-line="R539" data-index="4"><span class="change-label mod">∼ 修改</span>We retrieved <span class="inline-del">their 2000–2023 publications</span> <span class="inline-add">all publications published in these journals between 2000 and 2023</span> from OpenAlex <span class="citation">(Priem et al., 2022)</span> using the CWTS-processed snapshot released on August 30, 2024 <span class="citation">(Van Eck et al., 2024)</span>, and matched records by ISSNs and journal names.</span>
+              <span class="sentence" data-line="R540" data-index="5">After excluding non-English publications, duplicates, and records with missing metadata, the final sample contained 133,388 papers from 51 AI Q1 journals and 266,269 papers from 77 NS Q1 journals.</span>
+              <span class="sentence modified" data-line="R541" data-index="6"><span class="change-label mod">∼ 修改</span>As illustrated in <span class="ref">Fig. publication-volumes</span>, publication volumes increased overall in both disciplines, although NS declined slightly between 2019 and 2023.</span>
+            </p>
+
+            <h3 id="schema">3.2.1 Typed-triple extraction</h3>
+            <p>
+              <span class="sentence" data-line="R555" data-index="7">To evaluate knowledge extraction, we sampled five publications per year from each discipline, yielding 240 documents for manual annotation.</span>
+              <span class="sentence modified" data-line="R558" data-index="8"><span class="change-label mod">∼ 修改</span>Inter-coder agreement, measured by Cohen’s <em>κ</em> <span class="citation">(Cohen, 1960)</span>, was substantial for entity extraction (<em>κ</em> = 0.820) and relation annotation (<em>κ</em> = 0.825).</span>
+              <span class="sentence" data-line="R560" data-index="9">The extraction pipeline preserves typed entities and directed semantic relations as the basic units of the disciplinary knowledge networks.</span>
+            </p>
+
+            <div class="math-block" aria-label="semantic triple network definition">
+              <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+                <mrow><mi>G</mi><mo>=</mo><mo>(</mo><mi>V</mi><mo>,</mo><mi>E</mi><mo>,</mo><mi>T</mi><mo>)</mo><mo>,</mo><mspace width=".7em"/><mi>E</mi><mo>⊆</mo><mi>V</mi><mo>×</mo><mi>R</mi><mo>×</mo><mi>V</mi></mrow>
+              </math>
+            </div>
+
+            <h2 id="validation">4.3 Validation of the network-coupling method</h2>
+            <p>
+              <span class="sentence selected" data-line="R738" data-index="10">The edge-coupling method proposed by <span class="citation">Ba et al. (2021)</span> has been validated for undirected science–technology networks <span class="citation">(Meng et al., 2024)</span>.</span>
+              <span class="sentence selected" data-line="R739" data-index="11">We further tested its <span class="inline-del">suitability</span> <span class="inline-add">robustness</span> for the directed semantic networks used in this study.</span>
+              <span class="sentence selected" data-line="R740" data-index="12">We compared it with Adjacency Spectral Distance (ASD), which compares graph spectra <span class="citation">(Schieber et al., 2017)</span>, and the Quadratic Assignment Procedure (QAP), which tests adjacency-matrix similarity through permutation <span class="citation">(Krackhardt, 1988)</span>.</span>
+            </p>
+            <div class="selection-box">
+              <p>
+                <span class="sentence" data-line="R743" data-index="13">The edge-coupling method achieves an average TCS above 0.9 at nearly all network scales and requires less computation time (<span class="ref">Fig. coupling-algorithm-comparison</span>).</span>
+                <span class="sentence modified" data-line="R744" data-index="14"><span class="change-label mod">∼ 修改</span>ASD remains accurate but becomes slower as network scale increases, whereas QAP is less sensitive to directed structural differences.</span>
+                <span class="sentence modified" data-line="R745" data-index="15"><span class="change-label mod">∼ 修改</span>We therefore <span class="inline-del">selected</span> <span class="inline-add">used</span> the edge-coupling method proposed by <span class="citation">Ba et al. (2021)</span>.</span>
+              </p>
+              <span class="range-badge">当前选中 R738–R740（3 句）</span>
+            </div>
+
+            <div class="math-block" aria-label="TCS equation">
+              <math display="block" xmlns="http://www.w3.org/1998/Math/MathML">
+                <mrow><mi>TCS</mi><mo>(</mo><msub><mi>G</mi><mn>1</mn></msub><mo>,</mo><msub><mi>G</mi><mn>2</mn></msub><mo>)</mo><mo>=</mo><mfrac><mrow><mn>2</mn><mo>|</mo><msub><mi>E</mi><mn>1</mn></msub><mo>∩</mo><msub><mi>E</mi><mn>2</mn></msub><mo>|</mo></mrow><mrow><mo>|</mo><msub><mi>E</mi><mn>1</mn></msub><mo>|</mo><mo>+</mo><mo>|</mo><msub><mi>E</mi><mn>2</mn></msub><mo>|</mo></mrow></mfrac></mrow>
+              </math>
+            </div>
+
+            <div class="source-fallback">复杂环境保留为源码块（示例）
+\\begin{figure*}[t]
+  \\centering
+  \\includegraphics[width=\\textwidth]{figures/coupling-comparison.pdf}
+  \\caption{Comparison of directed-network coupling methods.}
+\\end{figure*}</div>
+            <div class="floating-tools" id="floatingTools">
+              <button title="复制选中文本">▣</button><button title="跳转原始 TeX">⌘</button><button title="清除选择" id="clearSelection">×</button><button class="primary" id="addComment">▣ 添加批注</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="view" data-view="original">
+          <article class="paper">
+            <h2>3.2 Data and knowledge extraction</h2>
+            <p><span class="sentence" data-line="L535">The empirical analysis compares publications in artificial intelligence (AI) and neurosciences (NS) over the period 2000–2023.</span> <span class="sentence" data-line="L536">The data-construction procedure combines journal classification, bibliographic retrieval, and document-level filtering.</span></p>
+            <p><span class="sentence modified" data-line="L537">We first identified first-quartile (Q1) journals in the “Computer Science, Artificial Intelligence” and “Neurosciences” categories from the 2024 Journal Citation Reports (JCR) in the Web of Science (WoS) database.</span> <span class="sentence modified" data-line="L538">We then retrieved all publications published in these journals between 2000 and 2023 from OpenAlex, using the CWTS-processed structured version of the OpenAlex snapshot released on August 30, 2024, and matched them by ISSNs and journal names.</span> <span class="sentence" data-line="L539">After excluding non-English publications, duplicate records, and records with missing metadata, the final sample contained 133,388 papers from 51 AI Q1 journals and 266,269 papers from 77 NS Q1 journals.</span></p>
+            <h2>4.3 Validation of the network-coupling method</h2>
+            <p><span class="sentence modified" data-line="L723">The edge-coupling method proposed by Ba et al. has been validated in prior studies of undirected science–technology knowledge network coupling.</span> <span class="sentence modified" data-line="L724">Because the semantic triple networks in this study are directed networks, we further tested whether this method remains suitable for directed semantic network comparison.</span> <span class="sentence modified" data-line="L725">We compared the edge-coupling method with ASD and QAP.</span></p>
+            <p><span class="sentence deleted" data-line="L730">Fig. coupling-algorithm-comparison shows that the edge-coupling method achieves an average TCS above 0.9 across nearly all network scales while requiring less computation time than the comparison methods.</span> <span class="sentence deleted" data-line="L733">The balance between ability to distinguish network structures and computational efficiency justifies our selection of the method proposed by Ba et al. as the edge-coupling method used in this study.</span></p>
+          </article>
+        </div>
+
+        <div class="view" data-view="split">
+          <div class="split-view">
+            <div class="split-head"><div>修改前 · base</div><div>修改后 · head</div></div>
+            <div class="split-row"><div class="split-cell old">We first identified first-quartile (Q1) journals in the “Computer Science, Artificial Intelligence” and “Neurosciences” categories from the 2024 Journal Citation Reports (JCR) in the Web of Science database.<span class="split-line">L537</span></div><div class="split-cell new">We identified first-quartile (Q1) journals in the “Computer Science, Artificial Intelligence” and “Neurosciences” categories of the 2024 Journal Citation Reports.<span class="split-line">R538</span></div></div>
+            <div class="split-row"><div class="split-cell old">We then retrieved all publications published in these journals between 2000 and 2023 from OpenAlex, using the CWTS-processed structured version of the OpenAlex snapshot released on August 30, 2024, and matched them by ISSNs and journal names.<span class="split-line">L538</span></div><div class="split-cell new">We retrieved their 2000–2023 publications from OpenAlex using the CWTS-processed snapshot released on August 30, 2024, and matched records by ISSNs and journal names.<span class="split-line">R539</span></div></div>
+            <div class="split-row"><div class="split-cell context">After excluding non-English publications, duplicate records, and records with missing metadata, the final sample contained 133,388 papers from 51 AI Q1 journals and 266,269 papers from 77 NS Q1 journals.<span class="split-line">L539</span></div><div class="split-cell context">After excluding non-English publications, duplicates, and records with missing metadata, the final sample contained 133,388 papers from 51 AI Q1 journals and 266,269 papers from 77 NS Q1 journals.<span class="split-line">R540</span></div></div>
+            <div class="split-row"><div class="split-cell old">Because the semantic triple networks in this study are directed networks, we further tested whether this method remains suitable for directed semantic network comparison.<span class="split-line">L724</span></div><div class="split-cell new">We further tested its suitability for the directed semantic networks used in this study.<span class="split-line">R739</span></div></div>
+            <div class="split-row"><div class="split-cell old">We compared the edge-coupling method with two commonly used network-comparison methods: ASD and QAP.<span class="split-line">L725</span></div><div class="split-cell new">We compared it with ASD, which compares graph spectra, and QAP, which tests adjacency-matrix similarity through permutation.<span class="split-line">R740</span></div></div>
+            <div class="split-row"><div class="split-cell old">The balance between ability to distinguish network structures and computational efficiency justifies our selection of the method proposed by Ba et al.<span class="split-line">L733</span></div><div class="split-cell new">We therefore selected the edge-coupling method proposed by Ba et al.<span class="split-line">R745</span></div></div>
+          </div>
+        </div>
+
+        <div class="view" data-view="raw">
+          <div class="raw-view">
+            <div class="raw-line"><span class="ln">537</span><span class="ln">537</span><code><span class="tok-command">{\\color</span><span class="tok-brace">{blue}}</span></code></div>
+            <div class="raw-line del"><span class="ln">537</span><span class="ln"></span><code>-We first identified first-quartile (Q1) journals in the ``Computer Science, Artificial Intelligence'' and ``Neurosciences'' categories from the 2024 Journal Citation Reports (JCR) in the Web of Science (WoS) database.</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">538</span><code>+We identified first-quartile (Q1) journals in the ``Computer Science, Artificial Intelligence'' and ``Neurosciences'' categories of the 2024 Journal Citation Reports.</code></div>
+            <div class="raw-line del"><span class="ln">538</span><span class="ln"></span><code>-We then retrieved all publications published in these journals between 2000 and 2023 from OpenAlex <span class="tok-command">\\citep</span>{Priem2022openalex}, using the CWTS-processed structured version of the OpenAlex snapshot released on August 30, 2024.</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">539</span><code>+We retrieved their 2000--2023 publications from OpenAlex <span class="tok-command">\\citep</span>{Priem2022openalex} using the CWTS-processed snapshot released on August 30, 2024.</code></div>
+            <div class="raw-line"><span class="ln">539</span><span class="ln">540</span><code> After excluding non-English publications, duplicates, and records with missing metadata, the final sample contained 133,388 papers from 51 AI Q1 journals and 266,269 papers from 77 NS Q1 journals.</code></div>
+            <div class="raw-line"><span class="ln"></span><span class="ln">542</span><code><span class="tok-brace">}</span></code></div>
+            <div class="raw-line"><span class="ln">722</span><span class="ln">736</span><code><span class="tok-command">\\subsection</span>{Validation of the network-coupling method}</code></div>
+            <div class="raw-line del"><span class="ln">724</span><span class="ln"></span><code>-Because the semantic triple networks in this study are directed networks, we further tested whether this method remains suitable for directed semantic network comparison.</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">739</span><code>+We further tested its suitability for the directed semantic networks used in this study.</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">740</span><code>+We compared it with Adjacency Spectral Distance (ASD) which compares graph spectra <span class="tok-command">\\citep</span>{Schieber2017quantificationofnetwork} and the Quadratic Assignment Procedure (QAP).</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">743</span><code>+The edge-coupling method of <span class="tok-command">\\citet</span>{Ba2021novelapproachto} achieves an average TCS above 0.9 at nearly all network scales and requires less computation time.</code></div>
+            <div class="raw-line add"><span class="ln"></span><span class="ln">745</span><code>+We therefore selected the edge-coupling method proposed by <span class="tok-command">\\citet</span>{Ba2021novelapproachto}.</code></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel comments-panel">
+      <div class="panel-title"><span>批注与讨论</span><span style="color:var(--muted)">»</span></div>
+      <div class="comments-tabs"><button class="active">当前选择的批注</button><button>文件内全部讨论 <span class="counter">5</span></button></div>
+      <div class="composer" id="composer">
+        <div class="selection-summary"><span id="selectionSummary">选中 manuscript.tex · R738–R740 · 3 句</span><a href="#validation">定位原文</a></div>
+        <div class="editor-tabs"><span>写批注</span><span style="color:var(--muted);border:0;font-weight:400">预览</span></div>
+        <div class="editor-toolbar"><b>B</b><i>I</i><s>S</s><span>链接</span><span>&lt;/&gt;</span><span>@</span><span>列表</span><span>•••</span></div>
+        <textarea id="commentText" placeholder="在这里写下批注。支持 Markdown 与 LaTeX 公式，例如 $E = mc^2$。">这里的比较对象和结论需要保持逻辑一致：验证的是 directed-network robustness，而不是重新从三个方法中“选择”一个方法。建议保留原文的决策语义。</textarea>
+        <div class="composer-actions"><button class="btn" id="saveDraft">保存草稿</button><button class="btn primary" id="publishComment">添加到审阅</button></div>
+      </div>
+      <div class="threads" id="threads">
+        <div class="thread-head"><strong>讨论线程</strong><select><option>按文中位置</option><option>按时间</option></select></div>
+        <article class="thread" data-resolved="false">
+          <div class="thread-meta"><div class="thread-avatar">M</div><div class="thread-author">MarioZZJ <span class="thread-time">2 小时前</span></div><span class="thread-status">未解决</span></div>
+          <div class="thread-anchor">manuscript.tex · R539</div>
+          <div class="thread-body">“2000--2023 publications”是什么？这里没必要省略“发表于”，否则句子读起来会像年份在修饰 publications 的类型。</div>
+          <div class="thread-actions"><span>♡ 2</span><button>回复</button><button class="resolve">解决</button><button>编辑</button></div>
+          <div class="reply"><strong>YVing3：</strong>收到，会恢复完整表达，并保持与数据筛选过程一致。</div>
+        </article>
+        <article class="thread" data-resolved="false">
+          <div class="thread-meta"><div class="thread-avatar" style="background:#8250df">M</div><div class="thread-author">MarioZZJ <span class="thread-time">1 小时前</span></div><span class="thread-status">未解决</span></div>
+          <div class="thread-anchor">manuscript.tex · R738–R740</div>
+          <div class="thread-body">remain suitable 和 suitability 并不完全等价。这里更接近 robustness：验证方法在有向网络上的表现是否稳健，而不是主观判断“适不适合”。</div>
+          <div class="thread-actions"><span>♡ 1</span><button>回复</button><button class="resolve">解决</button><button>编辑</button></div>
+        </article>
+        <article class="thread" data-resolved="false">
+          <div class="thread-meta"><div class="thread-avatar" style="background:#0969da">M</div><div class="thread-author">MarioZZJ <span class="thread-time">45 分钟前</span></div><span class="thread-status">未解决</span></div>
+          <div class="thread-anchor">manuscript.tex · R743–R745</div>
+          <div class="thread-body">“selected the edge-coupling method”和“justify our selection”也不等价。这个方法是研究设计中预先确定的，比较实验是在验证其合理性，不是从候选方法中事后择优。</div>
+          <div class="thread-actions"><span>♡ 1</span><button>回复</button><button class="resolve">解决</button><button>编辑</button></div>
+          <div class="reply"><strong>Reviewer_X：</strong>同意。可以改成 “The comparison supports the use of …” 来避免方法选择叙事。</div>
+        </article>
+        <article class="thread resolved" data-resolved="true">
+          <div class="thread-meta"><div class="thread-avatar" style="background:#1f883d">M</div><div class="thread-author">MarioZZJ <span class="thread-time">昨天</span></div><span class="thread-status">已解决</span></div>
+          <div class="thread-anchor">manuscript.tex · R691</div>
+          <div class="thread-body">实体类型首字母需要保持大写，与 schema 中的 Method、Material、Problem 一致。</div>
+          <div class="thread-actions"><button class="resolve">重新打开</button></div>
+        </article>
+        <button class="load-more">加载更多讨论</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="statusbar">
+    <div><strong>当前文件</strong><span>manuscript.tex⌄</span></div>
+    <div><strong>新增</strong><span class="stat-add">82 行（＋）</span></div>
+    <div><strong>删除</strong><span class="stat-del">167 行（−）</span></div>
+    <div><strong>修改</strong><span class="stat-mod">23 句（∼）</span></div>
+    <div><strong>上下文</strong><span>1,034 行（=）</span></div>
+    <div class="review-progress"><span>已审阅 50%</span><div class="progress"><span style="width:50%"></span></div></div>
+    <div style="border:0">⌃</div>
+  </footer>
+</div>
+
+<div class="modal-backdrop" id="reviewModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+    <div class="modal-title"><span id="reviewTitle">提交审阅</span><button class="icon-button" id="closeModal">×</button></div>
+    <div class="modal-body">
+      <textarea placeholder="为本轮审阅添加总结（可选）">建议重点恢复被压缩后丢失的逻辑限定，并统一方法验证部分的叙事。</textarea>
+      <label class="review-option"><input type="radio" name="review" checked><div><strong>Comment</strong><span>提交一般性反馈，不明确批准或阻止合并。</span></div></label>
+      <label class="review-option"><input type="radio" name="review"><div><strong>Approve</strong><span>批准这些修改。</span></div></label>
+      <label class="review-option"><input type="radio" name="review"><div><strong>Request changes</strong><span>要求作者在合并前修改。</span></div></label>
+    </div>
+    <div class="modal-actions"><button class="btn" id="cancelReview">取消</button><button class="btn primary" id="submitReview">提交审阅</button></div>
+  </div>
+</div>
+<div class="toast" id="toast">已保存</div>
+
+<script>
+(() => {
+  const root = document.documentElement;
+  const toast = document.getElementById('toast');
+  const showToast = (message) => {
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(showToast.t);
+    showToast.t = setTimeout(() => toast.classList.remove('show'), 1700);
+  };
+
+  document.getElementById('viewModes').addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-mode]');
+    if (!button) return;
+    document.querySelectorAll('#viewModes button').forEach(b => b.classList.toggle('active', b === button));
+    document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.dataset.view === button.dataset.mode));
+    const labels = { final: '3.2 Data and knowledge extraction', original: '修改前版本 · manuscript.tex', split: '修改前 / 修改后对照', raw: '原始 TeX diff · manuscript.tex' };
+    document.querySelector('.paper-header strong').textContent = labels[button.dataset.mode];
+    document.getElementById('paperScroll').scrollTop = 0;
+  });
+
+  let fontSize = 17;
+  const updateFont = () => {
+    root.style.setProperty('--paper-size', fontSize + 'px');
+    document.getElementById('fontValue').textContent = fontSize + 'px';
+  };
+  document.getElementById('fontDown').onclick = () => { fontSize = Math.max(14, fontSize - 1); updateFont(); };
+  document.getElementById('fontUp').onclick = () => { fontSize = Math.min(24, fontSize + 1); updateFont(); };
+  document.getElementById('lineHeight').onchange = e => root.style.setProperty('--paper-leading', e.target.value);
+  document.getElementById('paperWidth').onchange = e => root.style.setProperty('--paper-width', e.target.value + 'px');
+  document.getElementById('fontFamily').onchange = e => {
+    const fonts = { serif: 'Georgia, "Noto Serif", "Times New Roman", serif', system: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', mono: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' };
+    root.style.setProperty('--body-font', fonts[e.target.value]);
+  };
+  document.getElementById('themeToggle').onclick = () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  };
+
+  const selectable = [...document.querySelectorAll('[data-view="final"] .sentence[data-index]')];
+  let selection = selectable.filter(el => el.classList.contains('selected'));
+  let lastIndex = 12;
+  const refreshSelection = () => {
+    selection = selectable.filter(el => el.classList.contains('selected'));
+    const lines = selection.map(el => el.dataset.line);
+    const summary = document.getElementById('selectionSummary');
+    if (!selection.length) {
+      summary.textContent = '尚未选择正文范围';
+      document.getElementById('floatingTools').style.display = 'none';
+      return;
+    }
+    document.getElementById('floatingTools').style.display = 'flex';
+    summary.textContent = `选中 manuscript.tex · ${lines[0]}–${lines.at(-1)} · ${selection.length} 句`;
+  };
+  selectable.forEach((el, idx) => {
+    el.addEventListener('click', (event) => {
+      if (window.getSelection()?.toString()) return;
+      if (event.shiftKey && lastIndex !== null) {
+        const [a,b] = [lastIndex,idx].sort((x,y)=>x-y);
+        selectable.forEach((node,i)=>node.classList.toggle('selected', i>=a && i<=b));
+      } else {
+        if (!event.metaKey && !event.ctrlKey) selectable.forEach(node => node.classList.remove('selected'));
+        el.classList.toggle('selected');
+        lastIndex = idx;
+      }
+      refreshSelection();
+    });
+  });
+  document.getElementById('clearSelection').onclick = () => { selectable.forEach(el => el.classList.remove('selected')); refreshSelection(); };
+  document.getElementById('addComment').onclick = () => {
+    document.getElementById('composer').classList.remove('hidden');
+    document.getElementById('commentText').focus();
+    showToast('已在右侧打开批注编辑器');
+  };
+  document.getElementById('saveDraft').onclick = () => showToast('草稿已保存在本地');
+  document.getElementById('publishComment').onclick = () => {
+    const body = document.getElementById('commentText').value.trim();
+    if (!body) { showToast('请先输入批注内容'); return; }
+    const card = document.createElement('article');
+    card.className = 'thread';
+    card.dataset.resolved = 'false';
+    card.innerHTML = `<div class="thread-meta"><div class="thread-avatar">M</div><div class="thread-author">MarioZZJ <span class="thread-time">刚刚</span></div><span class="thread-status">草稿审阅</span></div><div class="thread-anchor">${document.getElementById('selectionSummary').textContent.replace('选中 ', '')}</div><div class="thread-body"></div><div class="thread-actions"><button>回复</button><button class="resolve">解决</button><button>编辑</button></div>`;
+    card.querySelector('.thread-body').textContent = body;
+    const head = document.querySelector('.thread-head');
+    head.after(card);
+    attachResolve(card.querySelector('.resolve'));
+    document.getElementById('commentText').value = '';
+    updateUnresolved();
+    showToast('已添加到待提交审阅');
+  };
+
+  function attachResolve(button) {
+    button.addEventListener('click', () => {
+      const thread = button.closest('.thread');
+      const nowResolved = thread.dataset.resolved !== 'true';
+      thread.dataset.resolved = String(nowResolved);
+      thread.classList.toggle('resolved', nowResolved);
+      thread.querySelector('.thread-status').textContent = nowResolved ? '已解决' : '未解决';
+      button.textContent = nowResolved ? '重新打开' : '解决';
+      updateUnresolved();
+    });
+  }
+  document.querySelectorAll('.resolve').forEach(attachResolve);
+  function updateUnresolved() {
+    const count = [...document.querySelectorAll('.thread')].filter(t => t.dataset.resolved !== 'true').length;
+    document.getElementById('unresolvedCount').textContent = count;
+  }
+  let unresolvedOnly = false;
+  document.getElementById('unresolvedToggle').onclick = () => {
+    unresolvedOnly = !unresolvedOnly;
+    document.getElementById('unresolvedToggle').style.background = unresolvedOnly ? 'var(--accent-soft)' : 'var(--surface)';
+    document.querySelectorAll('.thread[data-resolved="true"]').forEach(t => t.style.display = unresolvedOnly ? 'none' : 'block');
+    showToast(unresolvedOnly ? '仅显示未解决评论' : '显示全部评论');
+  };
+
+  const modal = document.getElementById('reviewModal');
+  document.getElementById('reviewButton').onclick = () => modal.classList.add('open');
+  document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
+  document.getElementById('cancelReview').onclick = () => modal.classList.remove('open');
+  document.getElementById('submitReview').onclick = () => { modal.classList.remove('open'); showToast('审阅已提交（视觉原型演示）'); };
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+  document.querySelectorAll('.tree a[href^="#"]').forEach(link => {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      document.querySelectorAll('.tree-row').forEach(row => row.classList.remove('active'));
+      link.classList.add('active');
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  refreshSelection();
+  updateUnresolved();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const PauseIcon: Icon
+
+export {PauseIcon}
+export default PauseIcon

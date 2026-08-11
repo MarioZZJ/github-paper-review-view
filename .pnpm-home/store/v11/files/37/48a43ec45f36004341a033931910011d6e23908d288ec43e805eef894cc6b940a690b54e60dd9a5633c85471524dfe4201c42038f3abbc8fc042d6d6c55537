@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const MultiSelectIcon: Icon
+
+export {MultiSelectIcon}
+export default MultiSelectIcon

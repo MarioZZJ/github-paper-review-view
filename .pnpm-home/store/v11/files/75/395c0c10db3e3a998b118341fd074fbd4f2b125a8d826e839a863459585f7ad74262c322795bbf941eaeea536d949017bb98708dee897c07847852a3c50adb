@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const IssueRelatesToIcon: Icon
+
+export {IssueRelatesToIcon}
+export default IssueRelatesToIcon

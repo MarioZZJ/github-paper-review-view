@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M8 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" })
+	}
+};
+var DotFillIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-dot-fill", svgDataByHeight, heights);
+});
+DotFillIcon.displayName = "DotFillIcon";
+export { DotFillIcon, DotFillIcon as default };

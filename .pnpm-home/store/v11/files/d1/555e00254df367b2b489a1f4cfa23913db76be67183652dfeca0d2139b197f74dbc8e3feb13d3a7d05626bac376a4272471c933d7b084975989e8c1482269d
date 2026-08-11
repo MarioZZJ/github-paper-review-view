@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M14.78 6.28a.749.749 0 0 0 0-1.06l-3.5-3.5a.749.749 0 1 0-1.06 1.06L12.439 5H5.251l-.001.007L5.251 5a.8.8 0 0 0-.171.019A4.501 4.501 0 0 0 5.5 14h1.704a.75.75 0 0 0 0-1.5H5.5a3 3 0 1 1 0-6h6.939L10.22 8.72a.749.749 0 1 0 1.06 1.06l3.5-3.5Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M14.72 2.22a.75.75 0 0 1 1.06 0l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 1 1-1.06-1.06l4.97-4.97H8.25c-.797 0-2.008.245-3 .959-.952.686-1.75 1.835-1.75 3.791s.798 3.105 1.75 3.791c.992.714 2.203.959 3 .959h3a.75.75 0 0 1 0 1.5h-3c-1.037 0-2.575-.305-3.876-1.241C3.035 18.545 2 16.944 2 14.5c0-2.444 1.035-4.045 2.374-5.009C5.675 8.555 7.214 8.25 8.25 8.25h11.44l-4.97-4.97a.75.75 0 0 1 0-1.06Z" })
+	}
+};
+var RedoIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-redo", svgDataByHeight, heights);
+});
+RedoIcon.displayName = "RedoIcon";
+export { RedoIcon, RedoIcon as default };

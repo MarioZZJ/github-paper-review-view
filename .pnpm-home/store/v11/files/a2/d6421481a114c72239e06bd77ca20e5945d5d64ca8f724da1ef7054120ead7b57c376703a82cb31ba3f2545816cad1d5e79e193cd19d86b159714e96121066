@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M1.19 1.143a.75.75 0 1 0-.88 1.215L3 4.305v9.945a.75.75 0 0 0 1.206.596L8 11.944l3.794 2.902A.75.75 0 0 0 13 14.25v-2.703l1.81 1.31a.75.75 0 1 0 .88-1.214l-2.994-2.168a1.09 1.09 0 0 0-.014-.01L4.196 3.32a.712.712 0 0 0-.014-.01L1.19 1.143Zm2.934.203A.5.5 0 0 1 4.6 1h7.233C12.478 1 13 1.522 13 2.167v5.05a.5.5 0 0 1-.793.405l-7.9-5.717a.5.5 0 0 1-.183-.559Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "m3.232 2.175 18.5 15.5a.75.75 0 1 1-.964 1.15L19 17.343v3.907a.75.75 0 0 1-1.218.585L12 17.21l-5.781 4.626A.75.75 0 0 1 5 21.253L4.947 5.569 2.268 3.325a.75.75 0 1 1 .964-1.15ZM7.421 2h9.829c.966 0 1.75.784 1.75 1.75v8.073a.75.75 0 0 1-1.232.575L6.94 3.325A.75.75 0 0 1 7.421 2Z" })
+	}
+};
+var BookmarkSlashFillIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-bookmark-slash-fill", svgDataByHeight, heights);
+});
+BookmarkSlashFillIcon.displayName = "BookmarkSlashFillIcon";
+export { BookmarkSlashFillIcon, BookmarkSlashFillIcon as default };

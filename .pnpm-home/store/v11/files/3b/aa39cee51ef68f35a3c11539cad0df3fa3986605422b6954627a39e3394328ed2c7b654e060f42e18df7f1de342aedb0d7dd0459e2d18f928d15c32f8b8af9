@@ -1,0 +1,16 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import * as React from 'react'
+
+type Size = 'small' | 'medium' | 'large'
+
+interface IconProps {
+  'aria-label'?: string
+  className?: string
+  fill?: string
+  size?: number | Size
+  verticalAlign?: 'middle' | 'text-bottom' | 'text-top' | 'top' | 'unset'
+}
+
+type Icon = React.FC<IconProps>
+
+export {Icon, IconProps}

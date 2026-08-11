@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const ItalicIcon: Icon
+
+export {ItalicIcon}
+export default ItalicIcon

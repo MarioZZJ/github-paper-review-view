@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const NoEntryIcon: Icon
+
+export {NoEntryIcon}
+export default NoEntryIcon

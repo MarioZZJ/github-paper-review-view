@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM3.75 6a.75.75 0 0 0 0 1.5h2.409a1.9 1.9 0 0 0-.025.151l-.307 2.508-.323 3.011a.75.75 0 0 0 1.492.16l.25-2.33h1.509l.25 2.33a.748.748 0 0 0 1.199.552.75.75 0 0 0 .291-.712l-.32-3-.309-2.519a1.9 1.9 0 0 0-.025-.151h2.409a.75.75 0 0 0 0-1.5h-8.5ZM8 6a2 2 0 1 0 .001-3.999A2 2 0 0 0 8 6Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0Zm2.5 6.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0ZM12 9h6.375a.75.75 0 0 1 0 1.5h-4.028l.542 4.42.482 4.5a.75.75 0 1 1-1.492.16l-.41-3.83H10.53l-.41 3.83a.75.75 0 1 1-1.492-.16l.484-4.511.54-4.409H5.625a.75.75 0 0 1 0-1.5H12Z" })
+	}
+};
+var AccessibilityInsetIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-accessibility-inset", svgDataByHeight, heights);
+});
+AccessibilityInsetIcon.displayName = "AccessibilityInsetIcon";
+export { AccessibilityInsetIcon, AccessibilityInsetIcon as default };

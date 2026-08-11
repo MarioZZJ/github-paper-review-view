@@ -1,0 +1,18 @@
+import { t as renderOcticon } from "../renderOcticon-DuMQdmQC.mjs";
+import React from "react";
+var heights = ["16", "24"];
+var svgDataByHeight = {
+	"16": {
+		"width": 16,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M8 0a7.996 7.996 0 0 1 8 8 8 8 0 1 1-8-8Zm0 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm2 8.75a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1 0-1.5ZM5 6a1 1 0 1 1 0 1.998A1 1 0 0 1 5 6Zm6 0a1 1 0 1 1 0 1.998A1 1 0 0 1 11 6Z" })
+	},
+	"24": {
+		"width": 24,
+		"path": /*#__PURE__*/ React.createElement("path", { d: "M12 1c6.075 0 11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12 5.925 1 12 1Zm0 1.5A9.5 9.5 0 0 0 2.5 12a9.5 9.5 0 0 0 9.5 9.5 9.5 9.5 0 0 0 9.5-9.5A9.5 9.5 0 0 0 12 2.5Zm2.75 12.75a.75.75 0 0 1 0 1.5h-5.5a.75.75 0 0 1 0-1.5h5.5Zm-7-5.75a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm8.5 0a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z" })
+	}
+};
+var SmileyNeutralIcon = /*#__PURE__*/ React.forwardRef(function(props, ref) {
+	return renderOcticon(props, ref, "octicon octicon-smiley-neutral", svgDataByHeight, heights);
+});
+SmileyNeutralIcon.displayName = "SmileyNeutralIcon";
+export { SmileyNeutralIcon, SmileyNeutralIcon as default };

@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const SkipIcon: Icon
+
+export {SkipIcon}
+export default SkipIcon

@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const IterationsIcon: Icon
+
+export {IterationsIcon}
+export default IterationsIcon

@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const RocketIcon: Icon
+
+export {RocketIcon}
+export default RocketIcon

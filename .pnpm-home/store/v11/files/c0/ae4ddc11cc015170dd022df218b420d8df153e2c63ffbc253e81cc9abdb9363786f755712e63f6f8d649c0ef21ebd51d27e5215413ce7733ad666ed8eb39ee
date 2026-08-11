@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const SignInIcon: Icon
+
+export {SignInIcon}
+export default SignInIcon

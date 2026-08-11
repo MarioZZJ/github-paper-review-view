@@ -1,0 +1,7 @@
+/* THIS FILE IS GENERATED. DO NOT EDIT IT. */
+import {Icon} from './types'
+
+declare const PlugIcon: Icon
+
+export {PlugIcon}
+export default PlugIcon
