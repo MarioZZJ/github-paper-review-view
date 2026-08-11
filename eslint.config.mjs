@@ -10,6 +10,7 @@ export default tseslint.config(
       ".output/**",
       "test-results/**",
       "playwright-report/**",
+      ".pnpm-home/**",
       "**/*.config.ts",
     ],
   },

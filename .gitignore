@@ -7,3 +7,9 @@ test-results/
 playwright-report/
 *.log
 .DS_Store
+
+# Playwright 浏览器与 pnpm 缓存（e2e 运行环境）
+.pnpm-home/
+
+# Reasonix 会话任务记录
+.reasonix/
