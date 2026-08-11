@@ -1,0 +1,7 @@
+{
+  "login": "demo-reviewer",
+  "id": 1001,
+  "avatar_url": null,
+  "scopes": ["repo"],
+  "repository_selection": "all"
+}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Refine transformer paper by demo-author · Pull Request #42 · demo/demo-repo</title>
+  </head>
+  <body>
+    <div class="application-main">
+      <div id="js-repo-pjax-container" data-target="react-app.embeddedData">
+        <react-app app-name="pull-requests">
+          <header data-component="SplitPageLayout.Header">
+            <h1 class="js-issue-title">Refine transformer paper</h1>
+            <span class="State">#42</span>
+          </header>
+          <nav data-testid="pr-tabs" role="tablist">
+            <a role="tab" href="/demo/demo-repo/pull/42" aria-current="page">Conversation</a>
+            <a role="tab" href="/demo/demo-repo/pull/42/commits">Commits</a>
+            <a role="tab" href="/demo/demo-repo/pull/42/checks">Checks</a>
+            <a role="tab" href="/demo/demo-repo/pull/42/files" id="files-tab">Files changed</a>
+          </nav>
+          <div id="diff-comparison-viewer-container">
+            <div class="file-header">papers/main.tex 原生 diff 内容（将被 Papers Review 隐藏）</div>
+          </div>
+        </react-app>
+      </div>
+    </div>
+    <script data-target="react-app.embeddedData" type="application/json">
+      {
+        "pullRequest": {
+          "nodeId": "PR_kwDEMOCK42",
+          "number": 42,
+          "title": "Refine transformer paper",
+          "state": "OPEN",
+          "baseRefOid": "base1111111111111111111111111111111111",
+          "headRefOid": "head2222222222222222222222222222222222"
+        },
+        "comparison": { "baseOid": "base1111111111111111111111111111111111", "headOid": "head2222222222222222222222222222222222" }
+      }
+    </script>
+  </body>
+</html>
