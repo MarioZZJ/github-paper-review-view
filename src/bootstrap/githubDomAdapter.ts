@@ -33,6 +33,11 @@ export class GithubDomAdapter {
     if (byId) return byId;
     const app = doc.querySelector<HTMLElement>('react-app[app-name="pull-requests"]');
     if (app) return app;
+    // react 新 UI：diff 视图容器（PR files 页与 PR 内 commit 页共用）
+    const files = doc.getElementById("files");
+    if (files) return files;
+    const layout = doc.getElementById("diff-layout-component");
+    if (layout) return layout;
     return null;
   }
 

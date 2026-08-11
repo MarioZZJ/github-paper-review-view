@@ -3,7 +3,8 @@ export interface PullRequestLocation {
   owner: string;
   repo: string;
   number: number;
-  surface: "files" | "changes";
+  /** 页面视图：PR 全量 files/changes，或 PR 内单个 commit（只读）。 */
+  surface: "files" | "changes" | "commits";
   /** commit range 视图的 head OID（可选）。 */
   rangeOid?: string;
 }

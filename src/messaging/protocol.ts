@@ -63,6 +63,16 @@ const apiGetPullDiff = z.object({
   type: z.literal("api.getPullDiff"),
   ...prLocSchema.shape,
 });
+const apiGetCommitFiles = z.object({
+  type: z.literal("api.getCommitFiles"),
+  ...prLocSchema.shape,
+  sha: z.string().min(7).max(40).regex(/^[0-9a-f]+$/i),
+});
+const apiGetCommitDiff = z.object({
+  type: z.literal("api.getCommitDiff"),
+  ...prLocSchema.shape,
+  sha: z.string().min(7).max(40).regex(/^[0-9a-f]+$/i),
+});
 const apiGetThreads = z.object({
   type: z.literal("api.getThreads"),
   ...prLocSchema.shape,
@@ -129,6 +139,8 @@ export const backgroundRequestSchema = z.discriminatedUnion("type", [
   apiGetTree,
   apiGetBlob,
   apiGetPullDiff,
+  apiGetCommitFiles,
+  apiGetCommitDiff,
   apiGetThreads,
   apiCreateReviewComment,
   apiUpdateReviewComment,

@@ -23,6 +23,8 @@ export interface ManuscriptViewProps {
   error: string | null;
   onComment: (side: "LEFT" | "RIGHT", line: number, quote?: string) => void;
   onThreadClick: (t: ReviewThread) => void;
+  /** 只读模式（如 commit 视图）：禁用选择评论。 */
+  readOnly?: boolean;
 }
 
 function buildThreadsByLine(threads: ReviewThread[]): Map<string, ReviewThread[]> {
@@ -209,6 +211,7 @@ export function ManuscriptView({
   error,
   onComment,
   onThreadClick,
+  readOnly = false,
 }: ManuscriptViewProps) {
   const viewMode = useUiStore((s) => s.viewMode);
   const scrollTarget = useUiStore((s) => s.scrollTarget);
@@ -225,6 +228,7 @@ export function ManuscriptView({
     anchor: ReviewAnchor;
   } | null>(null);
   useEffect(() => {
+    if (readOnly) return;
     const onMouseUp = (e: MouseEvent) => {
       // Shadow DOM 事件重定向：用 composedPath 检查事件落点
       const path = e.composedPath();
@@ -262,7 +266,7 @@ export function ManuscriptView({
       document.removeEventListener("mouseup", onMouseUp);
       document.removeEventListener("scroll", onScroll, true);
     };
-  }, [commentableIndex]);
+  }, [commentableIndex, readOnly]);
 
   // 滚动到目标行
   useEffect(() => {
@@ -285,6 +289,7 @@ export function ManuscriptView({
     threadsByLine,
     onComment,
     onThreadClick,
+    readOnly,
   };
 
   return (

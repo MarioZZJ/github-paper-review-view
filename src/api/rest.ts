@@ -199,6 +199,43 @@ export async function getPullDiff(
   );
 }
 
+/** 单个 commit 的元数据与变更文件（files 结构同 PR files）。 */
+export interface RestCommit {
+  sha: string;
+  parents: Array<{ sha: string }>;
+  files?: RestPullFile[];
+}
+
+export async function getCommit(
+  loc: Pick<PullRequestLocation, "owner" | "repo" | "number">,
+  sha: string,
+): Promise<RestCommit> {
+  return unwrap(
+    await makeRequest({
+      type: "api.getCommitFiles",
+      owner: loc.owner,
+      repo: loc.repo,
+      number: loc.number,
+      sha,
+    }),
+  );
+}
+
+export async function getCommitDiff(
+  loc: Pick<PullRequestLocation, "owner" | "repo" | "number">,
+  sha: string,
+): Promise<{ diff: string }> {
+  return unwrap(
+    await makeRequest({
+      type: "api.getCommitDiff",
+      owner: loc.owner,
+      repo: loc.repo,
+      number: loc.number,
+      sha,
+    }),
+  );
+}
+
 export interface CreateCommentInput {
   body: string;
   commitId: string;

@@ -7,6 +7,7 @@ const OWNER_REPO_RE = /^([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/;
  * 接受：
  * - /pull/{n}/files、/pull/{n}/changes
  * - 带 range：/pull/{n}/files/{startOid}...{endOid} 或 /pull/{n}/files/{oid}
+ * - PR 内 commit 视图：/pull/{n}/commits/{oid}（有 oid 才渲染）
  * - 任意 query / hash
  */
 export function parsePullRequestUrl(input: string | URL): PullRequestLocation | null {
@@ -25,14 +26,16 @@ export function parsePullRequestUrl(input: string | URL): PullRequestLocation | 
   if (!/^[A-Za-z0-9_.-]+$/.test(owner) || !/^[A-Za-z0-9_.-]+$/.test(repo)) return null;
   const number = Number(numberRaw);
   if (!Number.isInteger(number) || number <= 0) return null;
-  if (surface !== "files" && surface !== "changes") return null;
+  if (surface !== "files" && surface !== "changes" && surface !== "commits") return null;
+  // commit 列表页（/pull/{n}/commits 无 oid）没有 diff 内容，不渲染
+  if (surface === "commits" && !rangeRaw) return null;
   const location: PullRequestLocation = {
     owner,
     repo,
     number,
-    surface: surface === "files" ? "files" : "changes",
+    surface: surface === "files" ? "files" : surface === "changes" ? "changes" : "commits",
   };
-  // 兼容 {owner}/{repo}/pull/{n}/files/{oid}...{oid}
+  // 兼容 {owner}/{repo}/pull/{n}/files/{oid}...{oid} 与 commits/{oid}
   if (rangeRaw && parts.length >= 6) {
     const range = parts[5]!;
     if (/^[0-9a-f]{7,40}(\.{3}[0-9a-f]{7,40})?$/i.test(range)) {
@@ -42,10 +45,16 @@ export function parsePullRequestUrl(input: string | URL): PullRequestLocation | 
   return location;
 }
 
-/** 判断一个 URL 是否仍属于同一 PR 页面。 */
+/** 判断一个 URL 是否仍属于同一 PR 页面（含视图与 range）。 */
 export function samePullRequest(a: PullRequestLocation | null, b: PullRequestLocation | null): boolean {
   if (!a || !b) return a === b;
-  return a.owner === b.owner && a.repo === b.repo && a.number === b.number && a.rangeOid === b.rangeOid;
+  return (
+    a.owner === b.owner &&
+    a.repo === b.repo &&
+    a.number === b.number &&
+    a.surface === b.surface &&
+    a.rangeOid === b.rangeOid
+  );
 }
 
 /** 从任意文本中提取 owner/repo（用于校验，不用于猜测 URL）。 */

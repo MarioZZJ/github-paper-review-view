@@ -300,6 +300,18 @@ async function restGetPullDiff(owner: string, repo: string, number: number): Pro
   return { diff: text };
 }
 
+/** 单个 commit 的元数据 + 变更文件（sha 由 protocol 层校验为 hex）。 */
+async function restGetCommit(owner: string, repo: string, sha: string): Promise<unknown> {
+  return (await githubFetch(`/repos/${owner}/${repo}/commits/${sha}`)).json;
+}
+
+async function restGetCommitDiff(owner: string, repo: string, sha: string): Promise<unknown> {
+  const { text } = await githubFetch(`/repos/${owner}/${repo}/commits/${sha}`, {
+    headers: { Accept: "application/vnd.github.v3.diff" },
+  });
+  return { diff: text };
+}
+
 async function restCreateReviewComment(
   owner: string,
   repo: string,
@@ -508,6 +520,12 @@ export async function handleBackgroundRequest(req: BackgroundRequest): Promise<B
         break;
       case "api.getPullDiff":
         data = await restGetPullDiff(req.owner, req.repo, req.number);
+        break;
+      case "api.getCommitFiles":
+        data = await restGetCommit(req.owner, req.repo, req.sha);
+        break;
+      case "api.getCommitDiff":
+        data = await restGetCommitDiff(req.owner, req.repo, req.sha);
         break;
       case "api.getThreads":
         data = await restGetPullRequest(req.owner, req.repo, req.number);

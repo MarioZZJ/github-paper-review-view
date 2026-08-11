@@ -14,6 +14,7 @@ import {
   useBibEntries,
   useChangedFiles,
   useCommentableIndex,
+  useCommitMeta,
   usePendingReview,
   usePrMeta,
   useTexMacros,
@@ -54,10 +55,21 @@ export function AppShell({ location, onBackToNative }: AppShellProps) {
   }, [settingsOpen]);
 
   const metaQ = usePrMeta(location);
+  const commitMetaQ = useCommitMeta(location);
   const filesQ = useChangedFiles(location);
   const commentableQ = useCommentableIndex(location);
   const threadsQ = useThreads(location);
   const pendingQ = usePendingReview(location);
+
+  /** commit 视图：只读渲染该 commit 的 diff（评论禁用）。 */
+  const commitMode = location.surface === "commits";
+  const renderScope = useMemo(() => {
+    if (commitMode && commitMetaQ.data) {
+      return { baseSha: commitMetaQ.data.parentSha, headSha: commitMetaQ.data.sha };
+    }
+    if (metaQ.data) return { baseSha: metaQ.data.baseSha, headSha: metaQ.data.headSha };
+    return undefined;
+  }, [commitMode, commitMetaQ.data, metaQ.data]);
 
   const texFiles = useMemo(() => {
     return (filesQ.data ?? [])
@@ -71,13 +83,19 @@ export function AppShell({ location, onBackToNative }: AppShellProps) {
   }, [texFiles, activePath]);
   const activeFile = texFiles.find((f) => f.filename === activePath);
 
-  const bibQ = useBibEntries(location, metaQ.data, filesQ.data);
-  const macrosQ = useTexMacros(location, metaQ.data, filesQ.data, settings);
+  const bibQ = useBibEntries(location, renderScope, filesQ.data);
+  const macrosQ = useTexMacros(location, renderScope, filesQ.data, settings);
   const context = useMemo(
     () => buildParseContext(settings, macrosQ.data ?? {}, bibQ.data ?? {}, {}),
     [settings, macrosQ.data, bibQ.data],
   );
-  const aligned = useAlignedDocument(location, metaQ.data, activeFile, context, !!activeFile);
+  const aligned = useAlignedDocument(
+    location,
+    renderScope,
+    activeFile,
+    context,
+    !!activeFile && !!renderScope,
+  );
 
   const threads = threadsQ.data ?? [];
   const pendingReviewId = pendingQ.data?.id ?? null;
@@ -131,11 +149,15 @@ export function AppShell({ location, onBackToNative }: AppShellProps) {
   }
 
   const title = metaQ.data ? `#${metaQ.data.number} ${metaQ.data.title}` : "";
+  const badge =
+    commitMode && location.rangeOid
+      ? `commit ${location.rangeOid.slice(0, 7)}（只读）`
+      : null;
 
   return (
     <div className="pr-app-shell" data-pr-theme={theme}>
       <Toolbar
-        title={title}
+        title={badge ? `${title} · ${badge}` : title}
         stats={aligned.doc?.stats ?? null}
         fileCount={texFiles.length}
         hasToken={hasToken}
@@ -182,35 +204,40 @@ export function AppShell({ location, onBackToNative }: AppShellProps) {
           threads={threads}
           loading={aligned.loading}
           error={aligned.error}
-          onComment={onComment}
+          onComment={commitMode ? () => undefined : onComment}
           onThreadClick={onJumpToThread}
+          readOnly={commitMode}
         />
-        <CommentPanel
+        {!commitMode ? (
+          <CommentPanel
+            loc={location}
+            threads={threads}
+            pendingReviewId={pendingReviewId}
+            pullRequestId={metaQ.data?.id ?? ""}
+            headSha={metaQ.data?.headSha ?? ""}
+            activeAnchor={activeAnchor}
+            composerOpen={composerOpen}
+            onCloseComposer={closeComposer}
+            onJumpToThread={onJumpToThread}
+            onMutated={() => {
+              void threadsQ.refetch();
+              void pendingQ.refetch();
+            }}
+          />
+        ) : null}
+      </div>
+
+      {!commitMode ? (
+        <SubmitReviewBar
           loc={location}
-          threads={threads}
           pendingReviewId={pendingReviewId}
-          pullRequestId={metaQ.data?.id ?? ""}
-          headSha={metaQ.data?.headSha ?? ""}
-          activeAnchor={activeAnchor}
-          composerOpen={composerOpen}
-          onCloseComposer={closeComposer}
-          onJumpToThread={onJumpToThread}
-          onMutated={() => {
+          threadCount={threads.filter((t) => t.reviewState === "PENDING" || t.reviewId === pendingReviewId).length}
+          onSubmitted={() => {
             void threadsQ.refetch();
             void pendingQ.refetch();
           }}
         />
-      </div>
-
-      <SubmitReviewBar
-        loc={location}
-        pendingReviewId={pendingReviewId}
-        threadCount={threads.filter((t) => t.reviewState === "PENDING" || t.reviewId === pendingReviewId).length}
-        onSubmitted={() => {
-          void threadsQ.refetch();
-          void pendingQ.refetch();
-        }}
-      />
+      ) : null}
 
       {settingsOpen ? <SettingsPanel /> : null}
     </div>

@@ -82,6 +82,10 @@ export function buildChromeMock(): string {
         return { ok: true, data: FILES };
       case "api.getPullDiff":
         return { ok: true, data: DIFF };
+      case "api.getCommitFiles":
+        return { ok: true, data: { sha: msg.sha, parents: [{ sha: "base-" + msg.sha }], files: FILES.files } };
+      case "api.getCommitDiff":
+        return { ok: true, data: DIFF };
       case "api.getFileContent": {
         if (msg.path.endsWith("main.tex")) {
           const ref = String(msg.ref ?? "");

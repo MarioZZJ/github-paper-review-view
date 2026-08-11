@@ -5,6 +5,7 @@ export default defineContentScript({
   matches: [
     "https://github.com/*/*/pull/*/files*",
     "https://github.com/*/*/pull/*/changes*",
+    "https://github.com/*/*/pull/*/commits*",
   ],
   runAt: "document_idle",
   main() {

@@ -12,6 +12,8 @@ export interface BlockViewsProps {
   threadsByLine: Map<string, ReviewThread[]>;
   onComment: (side: "LEFT" | "RIGHT", line: number, quote?: string) => void;
   onThreadClick: (t: ReviewThread) => void;
+  /** 只读模式（如 commit 视图）：隐藏行内评论入口。 */
+  readOnly?: boolean;
 }
 
 /** 修改句：新文本 + 可折叠旧文本。 */
@@ -91,7 +93,7 @@ export function SentenceView({
         onMouseLeave={() => setHover(false)}
       >
         <ModifiedSentence sentence={sentence} props={props} />
-        {hover && commentable ? (
+        {hover && commentable && !props.readOnly ? (
           <button
             className="pr-inline-comment-btn"
             onClick={(e) => {
@@ -134,7 +136,7 @@ export function SentenceView({
         onMouseLeave={() => setHover(false)}
       >
         {head ? <InlineRenderer nodes={head.inline} /> : null}
-        {hover && commentable ? (
+        {hover && commentable && !props.readOnly ? (
           <button
             className="pr-inline-comment-btn"
             onClick={(e) => {
@@ -162,7 +164,7 @@ export function SentenceView({
       onMouseLeave={() => setHover(false)}
     >
       {head ? <InlineRenderer nodes={head.inline} /> : null}
-      {hover && commentable ? (
+      {hover && commentable && !props.readOnly ? (
         <button
           className="pr-inline-comment-btn"
           onClick={(e) => {

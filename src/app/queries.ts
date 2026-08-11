@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   getAllPullFiles,
+  getCommit,
+  getCommitDiff,
   getPullDiff,
   getPullRequest,
   type RestPullFile,
@@ -16,7 +18,7 @@ import { extractSafeMacros } from "@/tex/macros";
 import { getCachedDocument, putCachedDocument, documentCacheKey } from "@/storage/documentCache";
 import type { PullRequestLocation, PullRequestMeta } from "@/domain/pullRequest";
 import type { DiffSide } from "@/domain/source";
-import type { ParseContext } from "@/tex/types";
+import type { ParseContext, ParsedManuscript } from "@/tex/types";
 import type { Settings } from "@/domain/settings";
 import type { ReviewThread, ReviewThreadState } from "@/domain/review";
 import type { GqlReviewThread } from "@/api/graphql";
@@ -96,17 +98,43 @@ export function usePrMeta(loc: PullRequestLocation) {
 
 export function useChangedFiles(loc: PullRequestLocation) {
   return useQuery({
-    queryKey: ["pr-files", loc.owner, loc.repo, loc.number],
-    queryFn: () => getAllPullFiles(loc),
+    queryKey: ["pr-files", loc.owner, loc.repo, loc.number, loc.surface, loc.rangeOid],
+    queryFn: async () => {
+      // commit 视图：该 commit 的变更文件
+      if (loc.surface === "commits" && loc.rangeOid) {
+        const commit = await getCommit(loc, loc.rangeOid);
+        return commit.files ?? [];
+      }
+      return getAllPullFiles(loc);
+    },
+  });
+}
+
+/** commit 视图：commit 与其 parent 的 sha（用于渲染 base/head 两侧）。 */
+export function useCommitMeta(loc: PullRequestLocation) {
+  return useQuery({
+    queryKey: ["commit-meta", loc.owner, loc.repo, loc.rangeOid],
+    queryFn: async () => {
+      if (!loc.rangeOid) throw new Error("缺少 commit oid");
+      const commit = await getCommit(loc, loc.rangeOid);
+      return {
+        sha: commit.sha,
+        parentSha: commit.parents[0]?.sha ?? EMPTY_TREE_SHA,
+      };
+    },
+    enabled: loc.surface === "commits" && !!loc.rangeOid,
   });
 }
 
 /** unified diff（解析后）。 */
 export function useParsedDiff(loc: PullRequestLocation) {
   return useQuery({
-    queryKey: ["pr-diff", loc.owner, loc.repo, loc.number],
+    queryKey: ["pr-diff", loc.owner, loc.repo, loc.number, loc.surface, loc.rangeOid],
     queryFn: async () => {
-      const { diff } = await getPullDiff(loc);
+      const { diff } =
+        loc.surface === "commits" && loc.rangeOid
+          ? await getCommitDiff(loc, loc.rangeOid)
+          : await getPullDiff(loc);
       return parseUnifiedDiff(diff);
     },
   });
@@ -126,6 +154,7 @@ export function useThreads(loc: PullRequestLocation) {
   return useQuery({
     queryKey: ["threads", loc.owner, loc.repo, loc.number],
     queryFn: async () => (await getAllReviewThreads(loc)).map(gqlThreadToDomain),
+    enabled: loc.surface !== "commits",
   });
 }
 
@@ -138,8 +167,18 @@ export function usePendingReview(loc: PullRequestLocation) {
       const mine = reviews.find((r) => r.state === "PENDING");
       return mine ? { id: mine.id, state: mine.state as "PENDING" } : null;
     },
+    enabled: loc.surface !== "commits",
   });
 }
+
+/** 渲染范围：base/head 两侧的 ref（PR 全量或 commit 视图）。 */
+export interface RenderScope {
+  baseSha: string;
+  headSha: string;
+}
+
+/** Git 空树 SHA：作为无 parent 的 root commit 的基线。 */
+export const EMPTY_TREE_SHA = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
 /** 获取并缓存文件单侧版本。 */
 export async function fetchFileVersion(
@@ -172,7 +211,7 @@ export async function fetchFileVersion(
 /** 单文件单侧解析结果（worker）。 */
 export function useParsedManuscript(
   loc: PullRequestLocation,
-  meta: PullRequestMeta | undefined,
+  scope: RenderScope | undefined,
   file: RestPullFile | undefined,
   side: DiffSide,
   context: ParseContext,
@@ -183,23 +222,29 @@ export function useParsedManuscript(
       "parsed",
       loc.owner,
       loc.repo,
-      meta?.baseSha,
-      meta?.headSha,
+      scope?.baseSha,
+      scope?.headSha,
       file?.filename,
       side,
       context.showTexComments,
     ],
     queryFn: async () => {
-      if (!meta || !file) throw new Error("缺少元数据");
+      if (!scope || !file) throw new Error("缺少元数据");
       const { text } = await fetchFileVersion(
         loc,
-        meta.baseSha,
-        meta.headSha,
+        scope.baseSha,
+        scope.headSha,
         file.filename,
         side,
         file.size,
       );
-      if (text === null) throw new Error("无法获取文件内容");
+      if (text === null) {
+        // root commit 的 base 是空树：文件必然不存在，以空文档参与对齐
+        if (side === "LEFT" && scope.baseSha === EMPTY_TREE_SHA) {
+          return emptyManuscript(file.filename, side);
+        }
+        throw new Error("无法获取文件内容");
+      }
       const lines = toSourceLines(text);
       return parseInWorker({
         task: "parse",
@@ -209,28 +254,43 @@ export function useParsedManuscript(
         context,
       });
     },
-    enabled: enabled && !!meta && !!file,
+    enabled: enabled && !!scope && !!file,
     retry: 0,
   });
+}
+
+/** 空文档（root commit 的 base 侧）。 */
+function emptyManuscript(path: string, side: DiffSide): ParsedManuscript {
+  return {
+    path,
+    side,
+    blocks: [],
+    lineToBlock: new Map(),
+    outline: [],
+    labelNumbers: new Map(),
+    fallbackLines: [],
+    totalLines: 0,
+    lineList: [],
+  };
 }
 
 /** 审阅文档（worker 对齐）。 */
 export function useAlignedDocument(
   loc: PullRequestLocation,
-  meta: PullRequestMeta | undefined,
+  scope: RenderScope | undefined,
   file: RestPullFile | undefined,
   context: ParseContext,
   enabled: boolean,
 ) {
-  const baseQ = useParsedManuscript(loc, meta, file, "LEFT", context, enabled);
-  const headQ = useParsedManuscript(loc, meta, file, "RIGHT", context, enabled);
+  const baseQ = useParsedManuscript(loc, scope, file, "LEFT", context, enabled);
+  const headQ = useParsedManuscript(loc, scope, file, "RIGHT", context, enabled);
   const docQ = useQuery({
     queryKey: [
       "aligned",
       loc.owner,
       loc.repo,
-      meta?.baseSha,
-      meta?.headSha,
+      scope?.baseSha,
+      scope?.headSha,
       file?.filename,
       context.showTexComments,
     ],
@@ -253,17 +313,17 @@ export function useAlignedDocument(
 /** .bib 条目（author-year 显示）。 */
 export function useBibEntries(
   loc: PullRequestLocation,
-  meta: PullRequestMeta | undefined,
+  scope: RenderScope | undefined,
   files: RestPullFile[] | undefined,
 ) {
   return useQuery({
-    queryKey: ["bib", loc.owner, loc.repo, meta?.headSha],
+    queryKey: ["bib", loc.owner, loc.repo, scope?.headSha],
     queryFn: async () => {
-      if (!meta) return {};
+      if (!scope) return {};
       const bibFiles = (files ?? []).filter((f) => /\.bib$/i.test(f.filename));
       const out: Record<string, string> = {};
       for (const f of bibFiles.slice(0, 3)) {
-        const { text } = await fetchFileVersion(loc, meta.baseSha, meta.headSha, f.filename, "RIGHT", f.size);
+        const { text } = await fetchFileVersion(loc, scope.baseSha, scope.headSha, f.filename, "RIGHT", f.size);
         if (text === null) continue;
         const entries = parseBib(text);
         for (const [key, entry] of entries) {
@@ -273,7 +333,7 @@ export function useBibEntries(
       }
       return out;
     },
-    enabled: !!meta && !!files && files.length > 0,
+    enabled: !!scope && !!files && files.length > 0,
     staleTime: 5 * 60_000,
   });
 }
@@ -281,15 +341,15 @@ export function useBibEntries(
 /** 从主 manuscript 提取安全宏（与自定义宏合并）。 */
 export function useTexMacros(
   loc: PullRequestLocation,
-  meta: PullRequestMeta | undefined,
+  scope: RenderScope | undefined,
   files: RestPullFile[] | undefined,
   settings: Settings,
 ) {
   return useQuery({
-    queryKey: ["macros", loc.owner, loc.repo, meta?.headSha, settings.customMacros],
+    queryKey: ["macros", loc.owner, loc.repo, scope?.headSha, settings.customMacros],
     queryFn: async () => {
       const out: Record<string, string> = {};
-      if (!meta) return out;
+      if (!scope) return out;
       // 自定义宏（用户显式配置，格式 \name = body）
       for (const def of settings.customMacros) {
         const m = /^\\?([A-Za-z]+)\s*=\s*(.+)$/.exec(def.trim());
@@ -306,8 +366,8 @@ export function useTexMacros(
       if (main) {
         const { text } = await fetchFileVersion(
           loc,
-          meta.baseSha,
-          meta.headSha,
+          scope.baseSha,
+          scope.headSha,
           main.filename,
           "RIGHT",
           main.size,
@@ -319,7 +379,7 @@ export function useTexMacros(
       }
       return out;
     },
-    enabled: !!meta && !!files,
+    enabled: !!scope && !!files,
     staleTime: 5 * 60_000,
   });
 }
