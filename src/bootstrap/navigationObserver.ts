@@ -24,8 +24,10 @@ export class NavigationObserver {
     document.addEventListener("turbo:load", this.handleUrlEvent);
     document.addEventListener("turbo:render", this.handleUrlEvent);
     this.pollTimer = setInterval(() => this.check(), 250);
-    this.domObserver = new MutationObserver(() => this.check());
-    this.domObserver.observe(document.documentElement, { childList: true, subtree: true });
+    if (document.documentElement) {
+      this.domObserver = new MutationObserver(() => this.check());
+      this.domObserver.observe(document.documentElement, { childList: true, subtree: true });
+    }
     // 初始检查
     this.check();
   }

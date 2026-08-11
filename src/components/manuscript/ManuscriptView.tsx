@@ -10,7 +10,7 @@ import { Spinner } from "@/components/common/Spinner";
 import type { ReviewDocument } from "@/revisions/buildReviewDocument";
 import type { ParsedManuscript } from "@/tex/types";
 import type { CommentableIndexByFile } from "@/source/commentableLines";
-import type { ReviewThread } from "@/domain/review";
+import type { ReviewAnchor, ReviewThread } from "@/domain/review";
 
 export interface ManuscriptViewProps {
   path: string;
@@ -219,10 +219,23 @@ export function ManuscriptView({
   const threadsByLine = useMemo(() => buildThreadsByLine(threads), [threads]);
 
   // 选择 → 浮动评论按钮
-  const [popover, setPopover] = useState<{ x: number; y: number; quote: string; anchorKey: string } | null>(null);
+  const [popover, setPopover] = useState<{
+    x: number;
+    y: number;
+    anchor: ReviewAnchor;
+  } | null>(null);
   useEffect(() => {
     const onMouseUp = (e: MouseEvent) => {
-      if (!(e.target instanceof Element) || !e.target.closest(".pr-paper, .pr-split-view, .pr-raw-view")) {
+      // Shadow DOM 事件重定向：用 composedPath 检查事件落点
+      const path = e.composedPath();
+      // 点击 popover 自身（评论按钮）时不干扰
+      if (path.some((n) => n instanceof Element && n.closest(".pr-selection-popover") !== null)) {
+        return;
+      }
+      const inPaper = path.some(
+        (n) => n instanceof Element && n.closest(".pr-paper, .pr-split-view, .pr-raw-view") !== null,
+      );
+      if (!inPaper) {
         setPopover(null);
         return;
       }
@@ -238,8 +251,7 @@ export function ManuscriptView({
         setPopover({
           x: Math.min(rect.left, window.innerWidth - 200),
           y: rect.bottom + 6,
-          quote: result.anchor.quote,
-          anchorKey: `${result.anchor.side}:${result.anchor.startLine}-${result.anchor.endLine}`,
+          anchor: result.anchor,
         });
       }, 0);
     };
@@ -311,18 +323,17 @@ export function ManuscriptView({
           <button
             className="pr-btn pr-btn-primary pr-btn-sm"
             onClick={() => {
-              const result = selectionToAnchor(commentableIndex);
-              if (result.anchor) {
-                openComposer(result.anchor);
-                window.getSelection()?.removeAllRanges();
-              }
+              openComposer(popover.anchor);
+              window.getSelection()?.removeAllRanges();
               setPopover(null);
             }}
           >
             评论
           </button>
-          <span className="pr-selection-quote" title={popover.quote}>
-            {popover.quote.length > 40 ? `${popover.quote.slice(0, 40)}…` : popover.quote}
+          <span className="pr-selection-quote" title={popover.anchor.quote}>
+            {popover.anchor.quote.length > 40
+              ? `${popover.anchor.quote.slice(0, 40)}…`
+              : popover.anchor.quote}
           </span>
         </div>
       ) : null}

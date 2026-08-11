@@ -57,7 +57,9 @@ export class MountController {
         this.remount();
       }
     });
-    this.domGuard.observe(document.documentElement, { childList: true, subtree: true });
+    if (document.documentElement) {
+      this.domGuard.observe(document.documentElement, { childList: true, subtree: true });
+    }
   }
 
   private onNavigate(loc: PullRequestLocation | null): void {
@@ -65,7 +67,12 @@ export class MountController {
       // 离开了 PR 页面
       if (this.state === "active") this.deactivate();
       this.current = null;
+      this.adapter.removeTab();
       return;
+    }
+    // 页面结构就绪时始终展示 Papers Review tab（点击才激活）
+    if (this.adapter.findTabBar()) {
+      this.adapter.ensureTab(loc);
     }
     if (this.state === "active" && this.current && samePullRequest(this.current, loc)) {
       return;
