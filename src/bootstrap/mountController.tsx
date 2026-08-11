@@ -5,6 +5,7 @@ import { samePullRequest } from "./githubUrl";
 import { PapersReviewApp } from "@/app/PapersReviewApp";
 import type { PullRequestLocation } from "@/domain/pullRequest";
 import styles from "@/entrypoints/papers-review.content/style.css?inline";
+import { katexCss } from "@/tex/renderMath";
 
 type ControllerState = "idle" | "active";
 
@@ -101,6 +102,9 @@ export class MountController {
     if (tab) tab.scrollIntoView({ block: "nearest" });
     const shadow = host.attachShadow({ mode: "open" });
     this.shadow = shadow;
+    const katexStyleEl = document.createElement("style");
+    katexStyleEl.textContent = katexCss;
+    shadow.appendChild(katexStyleEl);
     const styleEl = document.createElement("style");
     styleEl.textContent = styles;
     shadow.appendChild(styleEl);

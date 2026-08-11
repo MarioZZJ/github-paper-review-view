@@ -4,10 +4,17 @@ import type { LineRange } from "@/domain/source";
 
 export type CommentableIndex = Map<DiffSide, Map<number, CommentableLine>>;
 
+/** 多文件索引：path → 单文件索引。 */
+export type CommentableIndexByFile = Map<string, CommentableIndex>;
+
 /** 从文件集合构建 side → line → CommentableLine 索引。 */
-export function buildCommentableIndex(files: Array<{ path: string; commentableLines: CommentableLine[] }>): Map<string, CommentableIndex> {
+export function buildCommentableIndex(
+  files: Array<{ newPath: string | null; oldPath: string | null; commentableLines: CommentableLine[] }>,
+): CommentableIndexByFile {
   const out = new Map<string, CommentableIndex>();
   for (const file of files) {
+    const path = file.newPath ?? file.oldPath ?? "";
+    if (!path) continue;
     const index: CommentableIndex = new Map([
       ["LEFT", new Map()],
       ["RIGHT", new Map()],
@@ -15,7 +22,7 @@ export function buildCommentableIndex(files: Array<{ path: string; commentableLi
     for (const cl of file.commentableLines) {
       index.get(cl.side)?.set(cl.line, cl);
     }
-    out.set(file.path, index);
+    out.set(path, index);
   }
   return out;
 }

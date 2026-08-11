@@ -38,6 +38,7 @@ export interface RestPullFile {
   additions: number;
   deletions: number;
   changes: number;
+  size?: number;
   contents_url: string;
   patch?: string;
   blob_url: string;
