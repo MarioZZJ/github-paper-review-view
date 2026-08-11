@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import { Toolbar } from "@/components/layout/Toolbar";
 import { LeftSidebar } from "@/components/layout/LeftSidebar";
 import { ManuscriptView } from "@/components/manuscript/ManuscriptView";
@@ -113,11 +113,14 @@ export function AppShell({ location, onBackToNative }: AppShellProps) {
     root.dataset.prTheme = theme;
   }, [theme]);
 
-  // 默认视图随设置同步（仅首次）
+  // 默认视图随设置同步（仅首次加载后）
+  const initialViewApplied = useRef(false);
   useEffect(() => {
-    if (loadedSettings) setViewMode(settings.viewMode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadedSettings]);
+    if (loadedSettings && !initialViewApplied.current) {
+      initialViewApplied.current = true;
+      setViewMode(settings.viewMode);
+    }
+  }, [loadedSettings, settings.viewMode, setViewMode]);
 
   if (!loadedSettings || hasToken === null) {
     return (

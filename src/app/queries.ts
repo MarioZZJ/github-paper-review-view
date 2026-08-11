@@ -9,17 +9,15 @@ import {
 import { getAllReviewThreads, viewerPendingReview } from "@/api/graphql";
 import { fetchFileText, toSourceLines } from "@/source/fetchFile";
 import { parseUnifiedDiff } from "@/source/unifiedDiffParser";
-import { buildCommentableIndex, type CommentableIndex } from "@/source/commentableLines";
+import { buildCommentableIndex } from "@/source/commentableLines";
 import { parseInWorker, alignInWorker } from "@/workers/documentWorkerClient";
 import { parseBib, authorYear } from "@/tex/bibliography";
 import { extractSafeMacros } from "@/tex/macros";
 import { getCachedDocument, putCachedDocument, documentCacheKey } from "@/storage/documentCache";
 import type { PullRequestLocation, PullRequestMeta } from "@/domain/pullRequest";
 import type { DiffSide } from "@/domain/source";
-import type { ParsedManuscript, ParseContext } from "@/tex/types";
-import type { ReviewDocument } from "@/revisions/buildReviewDocument";
+import type { ParseContext } from "@/tex/types";
 import type { Settings } from "@/domain/settings";
-import type { CommentableIndexByFile } from "@/source/commentableLines";
 import type { ReviewThread, ReviewThreadState } from "@/domain/review";
 import type { GqlReviewThread } from "@/api/graphql";
 
@@ -341,11 +339,12 @@ export function isIgnoredPath(path: string, settings: Settings): boolean {
 }
 
 function globMatch(pattern: string, path: string): boolean {
+  const DOUBLE_STAR = "\u{E000}";
   const esc = pattern
     .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replace(/\*\*/g, "\u0000")
+    .replace(/\*\*/g, DOUBLE_STAR)
     .replace(/\*/g, "[^/]*")
-    .replace(/\u0000/g, ".*");
+    .replaceAll(DOUBLE_STAR, ".*");
   return new RegExp(`^${esc}$`).test(path);
 }
 

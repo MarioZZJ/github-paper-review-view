@@ -1,0 +1,15 @@
+% 脱敏示例论文（head 版本）
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\title{Attention Is All You Need}
+\begin{document}
+\maketitle
+We propose a new architecture for sequence transduction.
+The model is based on self-attention mechanisms.
+\begin{align}
+  h_t = \mathrm{softmax}(QK^T / \sqrt{d_k}) V
+\end{align}
+We evaluate our approach on machine translation.
+Our experiments show strong results on WMT 2014.
+\end{document}

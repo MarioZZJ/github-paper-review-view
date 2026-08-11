@@ -8,7 +8,7 @@ import { InlineRenderer } from "@/tex/renderAst";
 import { renderMath } from "@/tex/renderMath";
 import { Spinner } from "@/components/common/Spinner";
 import type { ReviewDocument } from "@/revisions/buildReviewDocument";
-import type { ParsedManuscript, ManuscriptBlock } from "@/tex/types";
+import type { ParsedManuscript } from "@/tex/types";
 import type { CommentableIndexByFile } from "@/source/commentableLines";
 import type { ReviewThread } from "@/domain/review";
 

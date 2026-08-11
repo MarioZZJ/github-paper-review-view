@@ -70,9 +70,10 @@ export const defaultSettings: Settings = {
   customMacros: [],
 };
 
-/** 校验未知设置对象，失败时返回默认设置。 */
+/** 校验未知设置对象：接受部分字段，缺失回退默认值；非法类型回退默认。 */
 export function parseSettings(raw: unknown): Settings {
-  const parsed = settingsSchema.safeParse(raw);
-  if (parsed.success) return parsed.data;
-  return defaultSettings;
+  if (typeof raw !== "object" || raw === null) return defaultSettings;
+  const parsed = settingsSchema.partial().safeParse(raw);
+  if (!parsed.success) return defaultSettings;
+  return { ...defaultSettings, ...parsed.data };
 }

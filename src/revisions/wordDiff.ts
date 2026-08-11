@@ -7,12 +7,12 @@ export interface WordToken {
 
 const TOKEN_RE = /(<MATH:[^>]*>|\[CITE:[^\]]*\]|\[REF:[^\]]*\])/;
 
-/** 保护不可拆 token（数学/citation/ref），diff 后还原。 */
-function protect(text: string): { protectedText: string; map: Map<string, string> } {
+/** 保护不可拆 token（数学/citation/ref），diff 后还原。两侧使用不同前缀避免误判相同。 */
+function protect(text: string, prefix: "A" | "B"): { protectedText: string; map: Map<string, string> } {
   const map = new Map<string, string>();
   let counter = 0;
   const out = text.replace(TOKEN_RE, (m) => {
-    const key = `\u0001TOK${counter}\u0002`;
+    const key = `__PRTOK_${prefix}${counter}__`;
     counter += 1;
     map.set(key, m);
     return key;
@@ -34,8 +34,8 @@ export function diffWords(
   oldText: string,
   newText: string,
 ): { oldTokens: WordToken[]; newTokens: WordToken[] } {
-  const { protectedText: oldP, map: oldMap } = protect(oldText);
-  const { protectedText: newP, map: newMap } = protect(newText);
+  const { protectedText: oldP, map: oldMap } = protect(oldText, "A");
+  const { protectedText: newP, map: newMap } = protect(newText, "B");
   const parts = diffWordsWithSpace(oldP, newP);
   const oldTokens: WordToken[] = [];
   const newTokens: WordToken[] = [];

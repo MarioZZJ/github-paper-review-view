@@ -1,0 +1,33 @@
+diff --git a/papers/main.tex b/papers/main.tex
+index 1111111..2222222 100644
+--- a/papers/main.tex
++++ b/papers/main.tex
+@@ -1,8 +1,9 @@
+ \documentclass[11pt]{article}
+ \usepackage{amsmath}
+ \usepackage{graphicx}
+ \title{Attention Is All You Need}
+ \begin{document}
++\maketitle
+ We propose a new architecture for sequence transduction.
+ The model is based on self-attention mechanisms.
+-\begin{equation}
++\begin{align}
+   h_t = \mathrm{softmax}(QK^T / \sqrt{d_k}) V
+-\end{equation}
++\end{align}
+ We evaluate our approach on machine translation.
++Our experiments show strong results on WMT 2014.
+ \end{document}
+diff --git a/papers/references.bib b/papers/references.bib
+index 3333333..4444444 100644
+--- a/papers/references.bib
++++ b/papers/references.bib
+@@ -1,6 +1,7 @@
+ @article{vaswani2017attention,
+   author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki},
+   title = {Attention is all you need},
+-  year = {2017}
++  year = {2017},
++  journal = {NeurIPS}
+ }

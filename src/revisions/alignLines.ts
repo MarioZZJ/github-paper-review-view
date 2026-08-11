@@ -1,7 +1,7 @@
 import { diffLines } from "diff";
 import type { SourceLine } from "@/domain/source";
 
-export type LineRunType = "unchanged" | "deleted" | "added";
+export type LineRunType = "unchanged" | "deleted" | "added" | "replacement";
 
 export interface LineDiffRun {
   type: LineRunType;
@@ -9,7 +9,7 @@ export interface LineDiffRun {
   headLines: SourceLine[];
 }
 
-/** 用 Myers 行 diff 对齐 base/head 的完整源行。 */
+/** 用 Myers 行 diff 对齐 base/head 的完整源行；相邻的删/增 run 合并为 replacement。 */
 export function alignLines(base: readonly SourceLine[], head: readonly SourceLine[]): LineDiffRun[] {
   const baseText = base.map((l) => l.raw).join("\n");
   const headText = head.map((l) => l.raw).join("\n");
@@ -21,11 +21,30 @@ export function alignLines(base: readonly SourceLine[], head: readonly SourceLin
   const push = (type: LineRunType, bLines: SourceLine[], hLines: SourceLine[]) => {
     if (bLines.length === 0 && hLines.length === 0) return;
     const last = runs[runs.length - 1];
-    if (last && last.type === type && (type !== "unchanged")) {
-      // 相邻的增删 run 合并（replacement 语义由上层处理）
-      last.baseLines.push(...bLines);
-      last.headLines.push(...hLines);
-      return;
+    if (last && last.type !== "unchanged" && type !== "unchanged") {
+      if (last.type === type) {
+        last.baseLines.push(...bLines);
+        last.headLines.push(...hLines);
+        return;
+      }
+      // deleted ↔ added 相邻 → 合并为 replacement
+      if (last.type === "deleted" && type === "added") {
+        last.type = "replacement";
+        last.baseLines.push(...bLines);
+        last.headLines.push(...hLines);
+        return;
+      }
+      if (last.type === "added" && type === "deleted") {
+        last.type = "replacement";
+        last.baseLines.push(...bLines);
+        last.headLines.push(...hLines);
+        return;
+      }
+      if (last.type === "replacement") {
+        last.baseLines.push(...bLines);
+        last.headLines.push(...hLines);
+        return;
+      }
     }
     runs.push({ type, baseLines: bLines, headLines: hLines });
   };

@@ -44,11 +44,6 @@ function envOf(line: string, kind: "begin" | "end"): string | null {
   return m ? m[1]! : null;
 }
 
-function isBlockMathStart(line: string): boolean {
-  const t = line.trim();
-  return t.startsWith("$$") || t.startsWith("\\[") || t.startsWith("\\begin{") && false;
-}
-
 export interface ScanOptions {
   path: string;
   side: DiffSide;
@@ -99,8 +94,6 @@ export function scanDocument(lines: SourceLine[], opts: ScanOptions): ParsedManu
   /** 当前 section 编号（1.2 风格）。 */
   const sectionCounters = [0, 0, 0, 0];
 
-  let titleOpen = false;
-  let abstractOpen = false;
 
   const flushParagraph = () => {
     if (paragraphs.length > 0) {
@@ -288,7 +281,6 @@ export function scanDocument(lines: SourceLine[], opts: ScanOptions): ParsedManu
     if (beginEnv) {
       if (beginEnv === "document") continue;
       if (beginEnv === "abstract") {
-        abstractOpen = true;
         const id = `h-${path}-${side}-${line.number}`;
         const span = { path, side, startLine: line.number, endLine: line.number, raw: line.raw, commentable: false };
         blocks.push({ type: "heading", level: 1 as const, title: [{ type: "text", text: "Abstract" }], titleText: "Abstract", span, id });
@@ -339,7 +331,6 @@ export function scanDocument(lines: SourceLine[], opts: ScanOptions): ParsedManu
         continue;
       }
       if (endEnv === "abstract") {
-        abstractOpen = false;
         flushParagraph();
         continue;
       }

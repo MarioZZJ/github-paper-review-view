@@ -11,11 +11,11 @@ export interface BibEntry {
   title: string | null;
 }
 
-const ENTRY_RE = /@(\w+)\s*\{\s*([^,\s]+)\s*,([\s\S]*?)\n?\}/g;
+const ENTRY_RE = /@(\w+)\s*\{\s*([^,\s]+)\s*,([\s\S]*?)\n?\}(?=\s*@|\s*$)/g;
 const FIELD_RE = /(\w+)\s*=\s*\{([^{}]*)\}/g;
 
 /** 把作者字符串转为 "Last" 形式。 */
-export function formatAuthor(author: string | null, maxAuthors = 2): string | null {
+export function formatAuthor(author: string | null, maxAuthors = 3): string | null {
   if (!author) return null;
   const parts = author
     .split(/\s+and\s+/i)

@@ -24,7 +24,8 @@ const API_VERSION = "2026-03-10";
 function assertSafeRepoPath(path: string): void {
   const segments = path.split("/");
   for (const seg of segments) {
-    if (seg.length === 0 || seg === "." || seg === ".." || /[\\\x00-\x1f]/.test(seg)) {
+    const hasControl = seg.split("").some((ch) => ch.charCodeAt(0) < 0x20);
+    if (seg.length === 0 || seg === "." || seg === ".." || hasControl) {
       throw new ApiError("BAD_REQUEST", `非法路径: ${path}`);
     }
   }
@@ -243,21 +244,6 @@ const M_UNMARK_VIEWED = /* GraphQL */ `
 mutation UnmarkFileViewed($input: UnmarkFileAsViewedInput!) {
   unmarkFileAsViewed(input: $input) { pullRequest { id } }
 }`;
-
-const GRAPHQL_DOCS: Record<string, string> = {
-  viewerPendingReview: Q_PENDING_REVIEW,
-  reviewThreads: Q_REVIEW_THREADS,
-  addReview: M_ADD_REVIEW,
-  addThread: M_ADD_THREAD,
-  addReply: M_ADD_REPLY,
-  submitReview: M_SUBMIT_REVIEW,
-  resolveThread: M_RESOLVE_THREAD,
-  unresolveThread: M_UNRESOLVE_THREAD,
-  updateComment: M_UPDATE_COMMENT,
-  deleteComment: M_DELETE_COMMENT,
-  markFileViewed: M_MARK_VIEWED,
-  unmarkFileViewed: M_UNMARK_VIEWED,
-};
 
 /* ------------------------------ REST 实现 ------------------------------ */
 

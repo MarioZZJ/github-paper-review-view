@@ -2,7 +2,6 @@ import { unwrap } from "./githubClient";
 import { makeRequest } from "@/messaging/protocol";
 import type { PullRequestLocation } from "@/domain/pullRequest";
 
-type GqlNode<T> = T;
 export interface PageInfo {
   hasNextPage: boolean;
   endCursor: string | null;

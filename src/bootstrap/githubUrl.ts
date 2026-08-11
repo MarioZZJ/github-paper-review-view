@@ -1,7 +1,6 @@
 import type { PullRequestLocation } from "@/domain/pullRequest";
 
 const OWNER_REPO_RE = /^([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/;
-const PR_PATH_RE = /^\/pull\/(\d+)\/(files|changes)(?:\/(.+))?$/;
 
 /**
  * 严格解析 GitHub PR URL。
@@ -22,6 +21,8 @@ export function parsePullRequestUrl(input: string | URL): PullRequestLocation | 
   // 支持尾部斜杠
   const [owner, repo, , numberRaw, surface, rangeRaw] = parts;
   if (!owner || !repo || !numberRaw || !surface) return null;
+  // owner/repo 字符白名单（URL 已解码段）
+  if (!/^[A-Za-z0-9_.-]+$/.test(owner) || !/^[A-Za-z0-9_.-]+$/.test(repo)) return null;
   const number = Number(numberRaw);
   if (!Number.isInteger(number) || number <= 0) return null;
   if (surface !== "files" && surface !== "changes") return null;

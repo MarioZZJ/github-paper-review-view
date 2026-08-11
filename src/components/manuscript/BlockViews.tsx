@@ -4,7 +4,6 @@ import { renderMath } from "@/tex/renderMath";
 import type { AlignedBlock, AlignedSentence } from "@/revisions/buildReviewDocument";
 import type { ReviewThread } from "@/domain/review";
 import type { ManuscriptBlock } from "@/tex/types";
-import type { WordToken } from "@/revisions/wordDiff";
 
 export interface BlockViewsProps {
   showDeleted: boolean;
@@ -15,18 +14,12 @@ export interface BlockViewsProps {
   onThreadClick: (t: ReviewThread) => void;
 }
 
-function wordDiffText(tokens: readonly WordToken[], type: "del" | "add"): string {
-  return tokens.filter((t) => t.type === type || t.type === "same").map((t) => t.text).join("");
-}
-
 /** 修改句：新文本 + 可折叠旧文本。 */
 function ModifiedSentence({ sentence, props }: { sentence: AlignedSentence; props: BlockViewsProps }) {
   const [showOld, setShowOld] = useState(false);
   const head = sentence.head;
   const base = sentence.base;
   if (!head) return null;
-  const oldText =
-    sentence.wordParts && base ? wordDiffText(sentence.wordParts.oldTokens, "del") : base?.text;
   return (
     <span
       className="pr-sentence pr-sentence-modified"
@@ -195,7 +188,7 @@ function ThreadBadge({ threads, onClick }: { threads: ReviewThread[]; onClick: (
   );
 }
 
-function MathBlockView({ block, props }: { block: Extract<ManuscriptBlock, { type: "math" }>; props: BlockViewsProps }) {
+function MathBlockView({ block }: { block: Extract<ManuscriptBlock, { type: "math" }> }) {
   const { html, failed } = renderMath(block.tex, true);
   return (
     <div
@@ -210,9 +203,9 @@ function MathBlockView({ block, props }: { block: Extract<ManuscriptBlock, { typ
   );
 }
 
-function FallbackBlockView({ block, props }: { block: Extract<ManuscriptBlock, { type: "fallback" }>; props: BlockViewsProps }) {
+function FallbackBlockView({ block, expandEnvironments }: { block: Extract<ManuscriptBlock, { type: "fallback" }>; expandEnvironments: boolean }) {
   const [expanded, setExpanded] = useState(false);
-  const show = props.expandEnvironments || expanded;
+  const show = expandEnvironments || expanded;
   return (
     <div className="pr-fallback-block" data-path={block.span.path} data-side={block.span.side} data-line={block.span.startLine}>
       <button className="pr-fallback-toggle" onClick={() => setExpanded((v) => !v)}>
@@ -285,9 +278,9 @@ export const AlignedBlockView = memo(function AlignedBlockView({
     case "heading":
       return <HeadingView block={hb} kind={block.kind} />;
     case "math":
-      return <MathBlockView block={hb} props={props} />;
+      return <MathBlockView block={hb} />;
     case "fallback":
-      return <FallbackBlockView block={hb} props={props} />;
+      return <FallbackBlockView block={hb} expandEnvironments={props.expandEnvironments} />;
     case "texcomment":
       return props.showTexComments ? <TexCommentView block={hb} /> : null;
     case "list":

@@ -58,14 +58,9 @@ function isSafeBody(body: string): boolean {
   return !DANGEROUS_PATTERNS.some((re) => re.test(body));
 }
 
-interface SimpleMacro {
-  name: string;
-  arity: number;
-  body: string;
-}
-
-const NEWCOMMAND_RE = /^\\(?:re)?newcommand(?:\*)?\s*\\?([A-Za-z]+)(?:\[(\d+)\])?\s*\{([\s\S]*)\}$/;
-const OPERATOR_RE = /^\\DeclareMathOperator(?:\*)?\s*\\?([A-Za-z]+)\s*\{([\s\S]*)\}$/;
+const NEWCOMMAND_RE =
+  /^\\(?:re)?newcommand(?:\*)?\s*(?:\{\\?([A-Za-z]+)\}|\\?([A-Za-z]+))(?:\[(\d+)\])?\s*\{([\s\S]*)\}$/;
+const OPERATOR_RE = /^\\DeclareMathOperator(?:\*)?\s*(?:\{\\?([A-Za-z]+)\}|\\?([A-Za-z]+))\s*\{([\s\S]*)\}$/;
 
 /** 从一段 TeX 文本中提取安全宏。 */
 export function extractSafeMacros(text: string): Record<string, string> {
@@ -79,19 +74,19 @@ export function extractSafeMacros(text: string): Record<string, string> {
     }
     const m = NEWCOMMAND_RE.exec(line);
     if (m) {
-      const name = m[1]!;
-      const arity = m[2] ? Number(m[2]) : 0;
-      const body = m[3]!;
-      if (arity <= 9 && isSafeBody(body)) {
+      const name = m[1] ?? m[2];
+      const arity = m[3] ? Number(m[3]) : 0;
+      const body = m[4]!;
+      if (name && arity <= 9 && isSafeBody(body)) {
         out[`\\${name}`] = body;
       }
       continue;
     }
     const o = OPERATOR_RE.exec(line);
     if (o) {
-      const name = o[1]!;
-      const body = o[2]!;
-      if (isSafeBody(body)) {
+      const name = o[1] ?? o[2];
+      const body = o[3]!;
+      if (name && isSafeBody(body)) {
         out[`\\${name}`] = body;
       }
     }

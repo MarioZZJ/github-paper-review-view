@@ -102,7 +102,7 @@ async function findBlobInTree(
     if (!entry) return null;
     if (depth === segments.length - 1) return entry.type === "blob" ? entry.sha : null;
     if (entry.type === "tree") {
-      const sub = await getTree(loc, entry.sha);
+      await getTree(loc, entry.sha);
       return walk(full, depth + 1);
     }
     return null;

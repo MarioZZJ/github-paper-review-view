@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { makeRequest } from "@/messaging/protocol";
 import { useSettingsStore } from "@/storage/settingsStore";
 import { useUiStore } from "@/app/uiStore";
-import { defaultSettings, type Settings } from "@/domain/settings";
+import type { Settings } from "@/domain/settings";
 
 interface TokenStatus {
   hasToken: boolean;

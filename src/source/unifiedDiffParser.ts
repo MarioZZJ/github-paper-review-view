@@ -1,4 +1,4 @@
-import type { CommentableLine, DiffParseResult, HunkHeader, ParsedDiffFile } from "@/domain/diff";
+import type { DiffParseResult, HunkHeader, ParsedDiffFile } from "@/domain/diff";
 
 /**
  * 自实现的 unified diff parser（支持 Git 格式）。
@@ -60,6 +60,18 @@ export function parseUnifiedDiff(text: string): DiffParseResult {
       continue;
     }
     if (!current) continue;
+    if (
+      line.startsWith("new file mode") ||
+      line.startsWith("deleted file mode") ||
+      line.startsWith("rename from") ||
+      line.startsWith("rename to") ||
+      line.startsWith("similarity index") ||
+      line.startsWith("dissimilarity index") ||
+      line.startsWith("index ")
+    ) {
+      header.push(line);
+      continue;
+    }
     if (line.startsWith("--- ") || line.startsWith("+++ ")) {
       header.push(line);
       const path = line.slice(4).replace(/^a\/|^b\//, "");

@@ -130,7 +130,6 @@ export function pairSentences(oldTexts: readonly string[], newTexts: readonly st
   while (i > 0 && j > 0) {
     const pair = dp[i - 1]![j - 1]! + scores[i - 1]![j - 1]!;
     const skipOld = dp[i - 1]![j]! + GAP_PENALTY;
-    const skipNew = dp[i]![j - 1]! + GAP_PENALTY;
     const cur = dp[i]![j]!;
     if (Math.abs(cur - pair) < 1e-9) {
       pairs.push({ oldIndex: i - 1, newIndex: j - 1, score: scores[i - 1]![j - 1]! });

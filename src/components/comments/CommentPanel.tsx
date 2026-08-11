@@ -20,13 +20,11 @@ import {
   publishReply,
   removeComment,
   setThreadResolved,
-  submitPendingReview,
   type PublishMode,
 } from "@/reviews/reviewService";
 import { useSettingsStore } from "@/storage/settingsStore";
 import type { PullRequestLocation } from "@/domain/pullRequest";
-import type { ReviewAnchor, ReviewCommentNode, ReviewEvent, ReviewThread } from "@/domain/review";
-import type { RestPullFile } from "@/api/rest";
+import type { ReviewAnchor, ReviewCommentNode, ReviewThread } from "@/domain/review";
 
 export function relativeTime(iso: string): string {
   const t = Date.parse(iso);
@@ -200,13 +198,11 @@ export interface ThreadCardProps {
 
 function CommentItem({
   comment,
-  loc,
   onReply,
   onEdit,
   onDelete,
 }: {
   comment: ReviewCommentNode;
-  loc: PullRequestLocation;
   onReply: (c: ReviewCommentNode) => void;
   onEdit: (c: ReviewCommentNode) => void;
   onDelete: (c: ReviewCommentNode) => void;
@@ -354,7 +350,6 @@ export const ThreadCard = memo(function ThreadCard({
             <CommentItem
               key={c.id}
               comment={c}
-              loc={loc}
               onReply={(c) => {
                 setReplyingTo(c);
                 setEditing(null);
@@ -447,7 +442,6 @@ export function CommentPanel({
 }: CommentPanelProps) {
   const commentsOpen = useUiStore((s) => s.commentsOpen);
   const settings = useSettingsStore((s) => s.settings);
-  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const sorted = useMemo(
     () =>
       [...threads].sort(
@@ -458,7 +452,6 @@ export function CommentPanel({
   );
   if (!commentsOpen) return null;
   const jump = (t: ReviewThread) => {
-    setActiveThreadId(t.id);
     onJumpToThread(t);
   };
   return (

@@ -129,13 +129,30 @@ function macroArgs(m: Ast.Macro): Ast.Argument[] {
   return m.args ?? [];
 }
 
+/** 取第一个花括号参数（跳过 unified-latex 的空参数）。 */
+function braceArg(args: Ast.Argument[]): Ast.Argument | undefined {
+  return args.find((a) => a.openMark === "{" && a.closeMark === "}");
+}
+
+/** 取最后一个花括号参数。 */
+function lastBraceArg(args: Ast.Argument[]): Ast.Argument | undefined {
+  const braces = args.filter((a) => a.openMark === "{" && a.closeMark === "}");
+  return braces[braces.length - 1];
+}
+
+/** 取第 index 个花括号参数。 */
+function braceArgAt(args: Ast.Argument[], index: number): Ast.Argument | undefined {
+  const braces = args.filter((a) => a.openMark === "{" && a.closeMark === "}");
+  return braces[index];
+}
+
 function argContent(arg: Ast.Argument | undefined): Ast.Node[] {
   return arg?.content ?? [];
 }
 
 /** 提取 cite key 列表。 */
 function extractCiteKeys(m: Ast.Macro): string[] {
-  const first = macroArgs(m)[0];
+  const first = braceArg(macroArgs(m));
   if (!first) return [];
   const raw = astToString(first.content).replace(/[{}]/g, "");
   return raw
@@ -214,24 +231,24 @@ function handleMacro(m: Ast.Macro, ctx: ParseInlineContext): InlineNode[] {
   const args = macroArgs(m);
 
   if (BOLD.has(name)) {
-    return [{ type: "styled", style: "bold", children: walk(argContent(args[0]), ctx) }];
+    return [{ type: "styled", style: "bold", children: walk(argContent(braceArg(args)), ctx) }];
   }
   if (ITALIC.has(name)) {
-    return [{ type: "styled", style: "italic", children: walk(argContent(args[0]), ctx) }];
+    return [{ type: "styled", style: "italic", children: walk(argContent(braceArg(args)), ctx) }];
   }
   if (UNDERLINE.has(name)) {
-    return [{ type: "styled", style: "underline", children: walk(argContent(args[0]), ctx) }];
+    return [{ type: "styled", style: "underline", children: walk(argContent(braceArg(args)), ctx) }];
   }
   if (CODE.has(name)) {
-    const inner = astToString(argContent(args[0])).trim();
+    const inner = astToString(argContent(braceArg(args))).trim();
     return [{ type: "code", text: inner }];
   }
   if (name === "textrm" || name === "mathrm" || name === "textnormal" || name === "mbox" || name === "text") {
-    return walk(argContent(args[0]), ctx);
+    return walk(argContent(braceArg(args)), ctx);
   }
   if (name === "color" || name === "textcolor" || name === "colorbox" || name === "fcolorbox") {
     // 去掉颜色语义：textcolor/colorbox 的最后一个参数是内容；color 仅设置颜色
-    const contentArg = args[args.length - 1];
+    const contentArg = lastBraceArg(args);
     if (contentArg && args.length > 1) return walk(argContent(contentArg), ctx);
     return [];
   }
@@ -244,32 +261,32 @@ function handleMacro(m: Ast.Macro, ctx: ParseInlineContext): InlineNode[] {
     return [{ type: "cite", keys, display }];
   }
   if (REFS.has(name)) {
-    const label = astToString(argContent(args[0])).replace(/[{}]/g, "").trim();
+    const label = astToString(argContent(braceArg(args))).replace(/[{}]/g, "").trim();
     if (!label) return [];
     const num = ctx.labelNumbers?.[label];
     const display = name === "eqref" ? `(${num ?? "??"})` : (num ?? "??");
     return [{ type: "ref", label, display }];
   }
   if (name === "url") {
-    const href = astToString(argContent(args[0])).trim();
+    const href = astToString(argContent(braceArg(args))).trim();
     return [{ type: "url", href, text: href }];
   }
   if (name === "href") {
-    const href = astToString(argContent(args[0])).trim();
-    const text = astToString(argContent(args[1])).trim() || href;
+    const href = astToString(argContent(braceArg(args))).trim();
+    const text = astToString(argContent(braceArgAt(args, 1))).trim() || href;
     return [{ type: "url", href, text }];
   }
   if (name === "footnote" || name === "footnotetext") {
-    const children = walk(argContent(args[0]), ctx);
-    return [{ type: "footnote", inline: children, text: astToString(argContent(args[0])).trim() }];
+    const children = walk(argContent(braceArg(args)), ctx);
+    return [{ type: "footnote", inline: children, text: astToString(argContent(braceArg(args))).trim() }];
   }
   if (name === "label") return [];
   if (name === "includegraphics" || name === "includegraphics*") {
-    const file = astToString(argContent(args[args.length - 1])).trim();
+    const file = astToString(argContent(lastBraceArg(args))).trim();
     return [{ type: "code", text: `[图: ${file}]` }];
   }
   if (name === "input" || name === "include" || name === "subfile") {
-    const file = astToString(argContent(args[0])).trim();
+    const file = astToString(argContent(braceArg(args))).trim();
     return [{ type: "code", text: `[\\${name}{${file}}]` }];
   }
   if (
@@ -284,7 +301,7 @@ function handleMacro(m: Ast.Macro, ctx: ParseInlineContext): InlineNode[] {
   if (name === "thanks" || name === "footnote" || name === "footnotemark") return [];
   // 未知宏：渲染第一个参数（若有），否则显示宏名
   if (args.length > 0) {
-    return walk(argContent(args[0]), ctx);
+    return walk(argContent(braceArg(args)), ctx);
   }
   return [{ type: "text", text: `\\${name}` }];
 }

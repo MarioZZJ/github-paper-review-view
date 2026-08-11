@@ -166,7 +166,7 @@ export async function submitPendingReview(
   body: string,
 ): Promise<PublishResult> {
   try {
-    const res = await submitReview({ pullRequestReviewId: reviewId, event, body: body.trim() });
+    await submitReview({ pullRequestReviewId: reviewId, event, body: body.trim() });
     return { ok: true };
   } catch (err) {
     const apiErr = err instanceof ApiError ? err : new ApiError("UNKNOWN", String(err));
